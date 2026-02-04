@@ -83,6 +83,11 @@ const AdminJobEdit = () => {
                         <input type="text" name="position_title" required value={formData.position_title} onChange={handleChange} className="form-input" />
                     </div>
 
+                    <div className="form-group">
+                        <label>Department / Office</label>
+                        <input type="text" name="department" required value={formData.department} onChange={handleChange} className="form-input" />
+                    </div>
+
                     <div className="form-row">
                         <div className="form-group">
                             <label>Salary Grade</label>
