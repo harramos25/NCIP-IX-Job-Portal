@@ -3,6 +3,8 @@ import { supabase } from '../../lib/supabase';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useToast } from '../../context/ToastContext';
 import ConfirmationModal from '../../components/common/ConfirmationModal';
+import JSZip from 'jszip';
+import { saveAs } from 'file-saver';
 
 const AdminApplicationView = () => {
     const { showToast } = useToast();
@@ -12,7 +14,6 @@ const AdminApplicationView = () => {
     const [documents, setDocuments] = useState([]);
     const [loading, setLoading] = useState(true);
     const [statusUpdating, setStatusUpdating] = useState(false);
-    const [activeTab, setActiveTab] = useState('documents');
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [idPicture, setIdPicture] = useState(null);
 
@@ -169,6 +170,52 @@ const AdminApplicationView = () => {
         return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     };
 
+    const handleView = (path) => {
+        const { data } = supabase.storage.from('documents').getPublicUrl(path);
+        window.open(data.publicUrl, '_blank');
+    };
+
+    const handleDownload = async (path, filename) => {
+        try {
+            const { data, error } = await supabase.storage.from('documents').download(path);
+            if (error) throw error;
+            saveAs(data, filename);
+        } catch (error) {
+            console.error('Download error:', error);
+            showToast('Failed to download file', 'error');
+        }
+    };
+
+    const handleDownloadAll = async () => {
+        if (documents.length === 0) return;
+
+        const originalText = 'Download All (ZIP)';
+        const btn = document.getElementById('btn-download-all');
+        if (btn) btn.innerText = 'Zipping...';
+
+        try {
+            const zip = new JSZip();
+            const folder = zip.folder(`${application.full_name.replace(/[^a-z0-9]/gi, '_')}_documents`);
+
+            const promises = documents.map(async (doc) => {
+                const { data, error } = await supabase.storage.from('documents').download(doc.file_path);
+                if (error) throw error;
+                folder.file(doc.file_name, data);
+            });
+
+            await Promise.all(promises);
+
+            const content = await zip.generateAsync({ type: "blob" });
+            saveAs(content, `${application.full_name}_Documents.zip`);
+            showToast('All documents downloaded successfully', 'success');
+        } catch (error) {
+            console.error('Zip error:', error);
+            showToast('Failed to create ZIP file', 'error');
+        } finally {
+            if (btn) btn.innerText = originalText;
+        }
+    };
+
     if (loading) return <div className="admin-view-root text-center py-5"><div className="loader">Loading...</div></div>;
     if (!application) return <div className="admin-view-root text-center py-5"><h2>Record Not Found</h2></div>;
 
@@ -280,55 +327,55 @@ const AdminApplicationView = () => {
 
                     {/* Right Column (Main Content) */}
                     <main className="ats-card" style={{ minHeight: '500px' }}>
-                        <div className="ats-tabs-nav">
-                            <div
-                                className={`ats-tab-link ${activeTab === 'documents' ? 'active' : ''}`}
-                                onClick={() => setActiveTab('documents')}
-                            >Submitted Documents ({documents.length})</div>
-                            <div
-                                className={`ats-tab-link ${activeTab === 'notes' ? 'active' : ''}`}
-                                onClick={() => setActiveTab('notes')}
-                            >Internal Notes</div>
+                        <div className="ats-section-title" style={{ marginBottom: '1rem', paddingBottom: '0.5rem', borderBottom: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <span>Submitted Documents ({documents.length})</span>
+                            {documents.length > 0 && (
+                                <button
+                                    id="btn-download-all"
+                                    onClick={handleDownloadAll}
+                                    className="ats-btn ats-btn-primary"
+                                    style={{ fontSize: '0.8rem', padding: '0.4rem 0.8rem' }}
+                                >Download All (ZIP)</button>
+                            )}
                         </div>
 
-                        {activeTab === 'documents' ? (
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                                {documents.length > 0 ? (
-                                    documents.map((doc) => (
-                                        <div key={doc.id} style={{
-                                            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                                            padding: '1rem', border: '1px solid #f1f5f9', borderRadius: '8px'
-                                        }}>
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                                                <span style={{ fontSize: '1.5rem' }}>📄</span>
-                                                <div>
-                                                    <div style={{ fontWeight: '600', fontSize: '0.9rem' }}>{doc.document_type}</div>
-                                                    <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
-                                                        {doc.file_name?.toLowerCase().endsWith('.pdf') ? 'PDF' : 'Image'} • {formatSize(doc.file_size)}
-                                                    </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                            {documents.length > 0 ? (
+                                documents.map((doc) => (
+                                    <div key={doc.id} style={{
+                                        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                                        padding: '1rem', border: '1px solid #f1f5f9', borderRadius: '8px'
+                                    }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                                            <span style={{ fontSize: '1.5rem' }}>📄</span>
+                                            <div>
+                                                <div style={{ fontWeight: '600', fontSize: '0.9rem' }}>{doc.document_type}</div>
+                                                <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
+                                                    {doc.file_name?.toLowerCase().endsWith('.pdf') ? 'PDF' : 'Image'} • {formatSize(doc.file_size)}
                                                 </div>
                                             </div>
-                                            <a
-                                                href={`${supabase.storage.from('documents').getPublicUrl(doc.file_path).data.publicUrl}`}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
+                                        </div>
+                                        <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                            <button
+                                                onClick={() => handleView(doc.file_path)}
                                                 className="ats-btn ats-btn-ghost"
                                                 style={{ fontSize: '0.75rem' }}
-                                            >DOWNLOAD</a>
+                                            >VIEW</button>
+                                            <button
+                                                onClick={() => handleDownload(doc.file_path, doc.file_name)}
+                                                className="ats-btn ats-btn-ghost"
+                                                style={{ fontSize: '0.75rem', fontWeight: 'bold' }}
+                                            >DOWNLOAD</button>
                                         </div>
-                                    ))
-                                ) : (
-                                    <div style={{ textAlign: 'center', padding: '4rem 0', opacity: 0.5 }}>
-                                        <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📁</div>
-                                        <p>No documents found for this application.</p>
                                     </div>
-                                )}
-                            </div>
-                        ) : (
-                            <div style={{ textAlign: 'center', padding: '4rem 0', opacity: 0.5 }}>
-                                <p>Internal notes feature coming soon.</p>
-                            </div>
-                        )}
+                                ))
+                            ) : (
+                                <div style={{ textAlign: 'center', padding: '4rem 0', opacity: 0.5 }}>
+                                    <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📁</div>
+                                    <p>No documents found for this application.</p>
+                                </div>
+                            )}
+                        </div>
                     </main>
 
                 </div>
