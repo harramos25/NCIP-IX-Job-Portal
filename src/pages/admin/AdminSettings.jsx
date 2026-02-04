@@ -7,7 +7,7 @@ const AdminSettings = () => {
 
     // Default Settings
     const defaultSettings = {
-        systemTitle: 'NCIP IX JOB PORTAL', // Updated default to match current branding
+        systemTitle: 'NCIP IX Job Portal | Admin', // Updated to match user request
         adminEmail: 'admin@ncip.gov.ph',
         darkMode: false,
         maxFileSize: '5MB',

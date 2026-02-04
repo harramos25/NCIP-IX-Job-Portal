@@ -55,7 +55,7 @@ const AdminHeader = () => {
     }, []);
 
     // 3. System Title Logic
-    const [systemTitle, setSystemTitle] = useState("NCIP IX JOB PORTAL");
+    const [systemTitle, setSystemTitle] = useState("NCIP IX Job Portal | Admin");
 
     useEffect(() => {
         const loadSettings = () => {
@@ -69,6 +69,7 @@ const AdminHeader = () => {
         };
 
         loadSettings(); // Initial load
+        document.title = "NCIP IX Job Portal | Admin"; // Set initial browser title
 
         window.addEventListener('admin-settings-updated', loadSettings);
         return () => window.removeEventListener('admin-settings-updated', loadSettings);
@@ -96,7 +97,7 @@ const AdminHeader = () => {
                         className="header-logo"
                         style={{ height: '50px', width: 'auto' }}
                     />
-                    <h2 style={{ fontFamily: 'Inter, sans-serif', fontWeight: '800', color: 'var(--primary-dark)', textTransform: 'uppercase', fontSize: '1.25rem' }}>
+                    <h2 style={{ fontFamily: 'Inter, sans-serif', fontWeight: '800', color: 'var(--primary-dark)', fontSize: '1.25rem' }}>
                         {systemTitle}
                     </h2>
                 </div>
