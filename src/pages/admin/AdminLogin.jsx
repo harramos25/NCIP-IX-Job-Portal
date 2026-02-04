@@ -12,6 +12,10 @@ const AdminLogin = () => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
+  useEffect(() => {
+    document.title = "NCIP IX Job Portal | Admin";
+  }, []);
+
   const handleLogin = (e) => {
     e.preventDefault();
     setError('');
