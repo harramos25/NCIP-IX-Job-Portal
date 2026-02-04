@@ -77,6 +77,52 @@ const AdminApplicationView = () => {
         }
     };
 
+    const handleDelete = async () => {
+        if (!window.confirm('Are you absolutely sure you want to delete this applicant? This will permanently remove all personal data and uploaded documents.')) {
+            return;
+        }
+
+        setStatusUpdating(true);
+        try {
+            // 1. Get associated document paths
+            const { data: docs, error: docsError } = await supabase
+                .from('application_documents')
+                .select('file_path')
+                .eq('application_id', id);
+
+            if (docsError) throw docsError;
+
+            // 2. Clear from Storage if they exist
+            if (docs && docs.length > 0) {
+                const paths = docs.map(d => d.file_path);
+                const { error: storageError } = await supabase.storage
+                    .from('documents')
+                    .remove(paths);
+
+                if (storageError) {
+                    console.warn('Storage cleanup warning:', storageError);
+                    // Continue anyway to ensure record is deleted even if storage cleanup fails partially
+                }
+            }
+
+            // 3. Delete application (Cascade should handle application_documents)
+            const { error: deleteError } = await supabase
+                .from('applications')
+                .delete()
+                .eq('id', id);
+
+            if (deleteError) throw deleteError;
+
+            showToast('Applicant and all data deleted successfully', 'success');
+            navigate('/admin/applications');
+        } catch (error) {
+            console.error('Delete error:', error);
+            showToast('Failed to delete applicant: ' + error.message, 'error');
+        } finally {
+            setStatusUpdating(false);
+        }
+    };
+
     const formatSize = (bytes) => {
         if (!bytes) return '0 B';
         const k = 1024;
@@ -102,8 +148,8 @@ const AdminApplicationView = () => {
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                         <div>
                             <h1 className="ats-name-header">{application.full_name}</h1>
-                            <span className={`ats-pill ${application.status?.toLowerCase()}`}>
-                                {application.status}
+                            <span className={`ats-pill ${application.status?.toLowerCase() || 'unread'}`}>
+                                {application.status || 'Unread'}
                             </span>
                         </div>
 
@@ -124,6 +170,13 @@ const AdminApplicationView = () => {
                                 className="ats-btn ats-btn-ghost"
                                 disabled={statusUpdating}
                             >Archive</button>
+                            <button
+                                onClick={handleDelete}
+                                className="ats-btn ats-btn-outline-red"
+                                style={{ borderStyle: 'dashed', opacity: 0.8 }}
+                                disabled={statusUpdating}
+                                title="Permanently delete all data"
+                            >Delete Info</button>
                         </div>
                     </div>
                 </header>
