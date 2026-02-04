@@ -159,10 +159,10 @@ export default function Apply() {
                                 <input
                                     type="file"
                                     name={doc.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase()}
-                                    accept={doc === '2x2 ID Picture' ? "image/*" : ".pdf"}
+                                    accept={doc === '2x2 ID Picture' ? "image/png" : ".pdf"}
                                     required
                                 />
-                                <small>{doc === '2x2 ID Picture' ? "Image files only (JPG, PNG)" : "PDF files only"}</small>
+                                <small>{doc === '2x2 ID Picture' ? "PNG image only" : "PDF files only"}</small>
                             </div>
                         ))}
                     </div>
