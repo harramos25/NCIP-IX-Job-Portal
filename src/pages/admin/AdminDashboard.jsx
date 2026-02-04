@@ -103,357 +103,342 @@ const AdminDashboard = () => {
             } finally {
                 setLoading(false);
             }
-        };
+            // Initial fetch on mount
+            useEffect(() => {
+                fetchDashboardData();
+            }, []);
 
-        fetchDashboardData();
-    }, []);
+            // Set up Realtime subscriptions
+            useEffect(() => {
+                const jobsChannel = supabase
+                    .channel('jobs-changes')
+                    .on('postgres_changes', { event: '*', schema: 'public', table: 'jobs' }, () => {
+                        fetchDashboardData();
+                        fetchRecentJobs();
+                    })
+                    .subscribe();
 
-    const fetchRecentApplications = async () => {
-        let query = supabase
-            .from('applications')
-            .select(`
-                *,
-                jobs ( position_title )
-            `)
-            .order('submitted_at', { ascending: false })
-            .limit(10);
+                const applicationsChannel = supabase
+                    .channel('applications-changes')
+                    .on('postgres_changes', { event: '*', schema: 'public', table: 'applications' }, () => {
+                        fetchDashboardData();
+                        fetchRecentApplications();
+                    })
+                    .subscribe();
 
-        if (appStatusFilter) {
-            query = query.eq('status', appStatusFilter);
-        }
+                return () => {
+                    supabase.removeChannel(jobsChannel);
+                    supabase.removeChannel(applicationsChannel);
+                };
+            }, [appSearch, appStatusFilter, jobStatusFilter]);
 
-        if (appSearch) {
-            // Note: This is a simple ILIKE search. For full text search across joined tables, 
-            // it's better to use Supabase functions, but we'll search name/email here.
-            query = query.or(`full_name.ilike.%${appSearch}%,email.ilike.%${appSearch}%`);
-        }
+            // Separate fetchers for specific filtered lists
+            useEffect(() => {
+                fetchRecentApplications();
+            }, [appSearch, appStatusFilter]);
 
-        const { data } = await query;
-        setRecentApplications(data || []);
-    };
-
-    const fetchRecentJobs = async () => {
-        let query = supabase
-            .from('jobs')
-            .select('*')
-            .order('created_at', { ascending: false })
-            .limit(5);
-
-        if (jobStatusFilter) {
-            query = query.eq('status', jobStatusFilter);
-        }
-
-        const { data } = await query;
-        setRecentJobs(data || []);
-    };
-
-    // Re-fetch when filters change
-    useEffect(() => {
-        fetchRecentApplications();
-    }, [appSearch, appStatusFilter]);
-
-    useEffect(() => {
-        fetchRecentJobs();
-    }, [jobStatusFilter]);
+            useEffect(() => {
+                fetchRecentJobs();
+            }, [jobStatusFilter]);
 
 
-    const formatDate = (dateString) => {
-        if (!dateString) return '';
-        const options = { year: 'numeric', month: 'short', day: 'numeric' };
-        return new Date(dateString).toLocaleDateString(undefined, options);
-    };
+            const formatDate = (dateString) => {
+                if (!dateString) return '';
+                const options = { year: 'numeric', month: 'short', day: 'numeric' };
+                return new Date(dateString).toLocaleDateString(undefined, options);
+            };
 
-    const getDaysLeft = (deadline) => {
-        const diffTime = new Date(deadline) - new Date();
-        return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    };
+            const getDaysLeft = (deadline) => {
+                const diffTime = new Date(deadline) - new Date();
+                return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            };
 
-    return (
-        <div className="container dashboard-container">
-            <div className="page-header">
-                <div className="page-header-content">
-                    <h1>Dashboard</h1>
-                    <p>Welcome back, NCIP Admin!</p>
-                    <div style={{
-                        marginTop: '1.5rem',
-                        height: '3px',
-                        width: '60px',
-                        backgroundColor: '#334EAC',
-                        borderRadius: '2px'
-                    }}></div>
-                </div>
-            </div>
-
-            {/* Welcome Summary Card */}
-            <DashboardWelcomeCard
-                newApplicantsCount={stats.newApplicationsWeek}
-                jobsDeadlineCount={deadlineAlerts.length}
-            />
-
-            {/* Statistics Cards */}
-            <div className="stats-grid">
-                <div className="stat-card">
-                    <div className="card-content">
-                        <div className="stat-info">
-                            <h3>{stats.totalJobs}</h3>
-                            <p>Total Job Postings</p>
+            return (
+                <div className="container dashboard-container">
+                    <div className="page-header">
+                        <div className="page-header-content">
+                            <h1>Dashboard</h1>
+                            <p>Welcome back, NCIP Admin!</p>
+                            <div style={{
+                                marginTop: '1.5rem',
+                                height: '3px',
+                                width: '60px',
+                                backgroundColor: '#334EAC',
+                                borderRadius: '2px'
+                            }}></div>
                         </div>
                     </div>
-                    <div className="icon-watermark">
-                        <img src={totalJobIcon} alt="Total Job Posting" />
-                    </div>
-                </div>
 
-                <div className="stat-card">
-                    <div className="card-content">
-                        <div className="stat-info">
-                            <h3>{stats.openJobs}</h3>
-                            <p>Open Positions</p>
-                        </div>
-                    </div>
-                    <div className="icon-watermark">
-                        <img src={openJobIcon} alt="Open Positions" />
-                    </div>
-                </div>
+                    {/* Welcome Summary Card */}
+                    <DashboardWelcomeCard
+                        newApplicantsCount={stats.newApplicationsWeek}
+                        jobsDeadlineCount={deadlineAlerts.length}
+                    />
 
-                <div className="stat-card">
-                    <div className="card-content">
-                        <div className="stat-info">
-                            <h3>{stats.totalApplications}</h3>
-                            <p>Total Applicants</p>
-                        </div>
-                    </div>
-                    <div className="icon-watermark">
-                        <img src={totalAppIcon} alt="Total Applicants" />
-                    </div>
-                </div>
-
-                <div className="stat-card stat-card-highlight">
-                    <div className="card-content">
-                        <div className="stat-info">
-                            <h3>{stats.unreadApplications}</h3>
-                            <p>Unread Applicants</p>
-                        </div>
-                    </div>
-                    <div className="icon-watermark">
-                        <img src={unreadAppIcon} alt="Unread Applicants" />
-                    </div>
-                </div>
-            </div>
-
-            {/* Quick Actions */}
-            <div className="quick-actions">
-                <Link to="/admin/jobs/create" className="btn btn-primary btn-action-primary">
-                    <span className="btn-icon">➕</span>
-                    <span>Create New Job Posting</span>
-                </Link>
-                <Link to="/admin/applications" className="btn btn-secondary btn-action-secondary">
-                    <span>View All Applicants</span>
-                </Link>
-                <Link to="/admin/jobs" className="btn btn-secondary btn-action-secondary">
-                    <span>Manage Job Postings</span>
-                </Link>
-            </div>
-
-            {/* Deadline Alerts */}
-            {deadlineAlerts.length > 0 && (
-                <div className="deadline-alerts">
-                    <h3 className="deadline-alerts-title">⚠️ Deadline Alerts</h3>
-                    <div className="deadline-alerts-grid">
-                        {deadlineAlerts.map(alert => {
-                            const daysLeft = getDaysLeft(alert.deadline);
-                            const alertClass = daysLeft <= 0 ? 'deadline-today' : (daysLeft <= 1 ? 'deadline-urgent' : 'deadline-warning');
-                            const badgeText = daysLeft <= 0 ? 'Deadline Today' : (daysLeft === 1 ? '1 day left' : `${daysLeft} days left`);
-
-                            return (
-                                <div key={alert.id} className={`deadline-alert-item ${alertClass}`}>
-                                    <span className="deadline-alert-job">{alert.position_title}</span>
-                                    <span className="deadline-alert-badge">
-                                        {badgeText}
-                                    </span>
+                    {/* Statistics Cards */}
+                    <div className="stats-grid">
+                        <div className="stat-card">
+                            <div className="card-content">
+                                <div className="stat-info">
+                                    <h3>{stats.totalJobs}</h3>
+                                    <p>Total Job Postings</p>
                                 </div>
-                            );
-                        })}
-                    </div>
-                </div>
-            )}
+                            </div>
+                            <div className="icon-watermark">
+                                <img src={totalJobIcon} alt="Total Job Posting" />
+                            </div>
+                        </div>
 
-            {/* Analytics Section */}
-            <div className="dashboard-section analytics-section">
-                <h2>📈 Analytics Overview</h2>
-                <div className="analytics-grid">
-                    <div className="analytics-card">
-                        <div className="analytics-label">Applicants This Month</div>
-                        <div className="analytics-value">{stats.applicationsThisMonth}</div>
-                        <div className="analytics-change">+{stats.newApplicationsWeek} this week</div>
-                    </div>
-                    <div className="analytics-card">
-                        <div className="analytics-label">Most Applied Position</div>
-                        <div className="analytics-value">{mostApplied.position_title}</div>
-                        <div className="analytics-change">{mostApplied.count} applicants</div>
-                    </div>
-                    <div className="analytics-card">
-                        <div className="analytics-label">Open Positions</div>
-                        <div className="analytics-value">{stats.openJobs}</div>
-                        <div className="analytics-change">of {stats.totalJobs} total</div>
-                    </div>
-                </div>
-            </div>
+                        <div className="stat-card">
+                            <div className="card-content">
+                                <div className="stat-info">
+                                    <h3>{stats.openJobs}</h3>
+                                    <p>Open Positions</p>
+                                </div>
+                            </div>
+                            <div className="icon-watermark">
+                                <img src={openJobIcon} alt="Open Positions" />
+                            </div>
+                        </div>
 
-            {/* Recent Applications */}
-            <div className="dashboard-section">
-                <div className="section-header">
-                    <h2>Recent Applicants</h2>
-                    <div className="section-filters">
-                        <div className="inline-form">
-                            <input
-                                type="text"
-                                placeholder="Search applicants..."
-                                value={appSearch}
-                                onChange={(e) => setAppSearch(e.target.value)}
-                                className="filter-search"
-                            />
-                            <select
-                                value={appStatusFilter}
-                                onChange={(e) => setAppStatusFilter(e.target.value)}
-                                className="filter-select"
-                            >
-                                <option value="">All Status</option>
-                                <option value="Unread">Unread</option>
-                                <option value="Viewed">Viewed</option>
-                                <option value="Archived">Archived</option>
-                            </select>
+                        <div className="stat-card">
+                            <div className="card-content">
+                                <div className="stat-info">
+                                    <h3>{stats.totalApplications}</h3>
+                                    <p>Total Applicants</p>
+                                </div>
+                            </div>
+                            <div className="icon-watermark">
+                                <img src={totalAppIcon} alt="Total Applicants" />
+                            </div>
+                        </div>
+
+                        <div className="stat-card stat-card-highlight">
+                            <div className="card-content">
+                                <div className="stat-info">
+                                    <h3>{stats.unreadApplications}</h3>
+                                    <p>Unread Applicants</p>
+                                </div>
+                            </div>
+                            <div className="icon-watermark">
+                                <img src={unreadAppIcon} alt="Unread Applicants" />
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div className="table-container">
-                    <table className="data-table">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Position</th>
-                                <th>Email</th>
-                                <th>Date Submitted</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {recentApplications.length === 0 ? (
-                                <tr>
-                                    <td colSpan="6" className="text-center">No applicants found</td>
-                                </tr>
-                            ) : (
-                                recentApplications.map(app => (
-                                    <tr key={app.id} className={app.status?.toLowerCase()}>
-                                        <td>{app.full_name}</td>
-                                        <td>{app.jobs?.position_title || 'Unknown Job'}</td>
-                                        <td>{app.email}</td>
-                                        <td>{formatDate(app.submitted_at)}</td>
-                                        <td>
-                                            <span className={`status-badge status-${app.status?.toLowerCase()}`}>
-                                                {app.status}
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <Link to={`/admin/applications/${app.id}`} className="btn btn-sm btn-primary" title="View Application">
-                                                <span className="btn-icon">👁️</span>
-                                                <span>View</span>
-                                            </Link>
-                                        </td>
-                                    </tr>
-                                ))
-                            )}
-                        </tbody>
-                    </table>
-                </div>
-                <div className="text-right mt-2">
-                    <Link to="/admin/applications" className="btn btn-link">View All Applicants →</Link>
-                </div>
-            </div>
 
-            {/* Recent Job Postings */}
-            <div className="dashboard-section">
-                <div className="section-header">
-                    <h2>Recent Job Postings</h2>
-                    <div className="section-filters">
-                        <div className="inline-form">
-                            <select
-                                value={jobStatusFilter}
-                                onChange={(e) => setJobStatusFilter(e.target.value)}
-                                className="filter-select"
-                            >
-                                <option value="">All Status</option>
-                                <option value="Open">Open</option>
-                                <option value="Closed">Closed</option>
-                                <option value="Archived">Archived</option>
-                            </select>
-                        </div>
+                    {/* Quick Actions */}
+                    <div className="quick-actions">
+                        <Link to="/admin/jobs/create" className="btn btn-primary btn-action-primary">
+                            <span className="btn-icon">➕</span>
+                            <span>Create New Job Posting</span>
+                        </Link>
+                        <Link to="/admin/applications" className="btn btn-secondary btn-action-secondary">
+                            <span>View All Applicants</span>
+                        </Link>
+                        <Link to="/admin/jobs" className="btn btn-secondary btn-action-secondary">
+                            <span>Manage Job Postings</span>
+                        </Link>
                     </div>
-                </div>
-                <div className="table-container">
-                    <table className="data-table">
-                        <thead>
-                            <tr>
-                                <th>Position Title</th>
-                                <th>Deadline</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {recentJobs.length === 0 ? (
-                                <tr>
-                                    <td colSpan="5" className="text-center">No job postings found</td>
-                                </tr>
-                            ) : (
-                                recentJobs.map(job => {
-                                    const daysLeft = getDaysLeft(job.deadline);
-                                    let deadlineBadge = null;
 
-                                    if (daysLeft <= 3 && daysLeft >= 0) {
-                                        const badgeClass = daysLeft <= 0 ? 'deadline-badge-today' : (daysLeft <= 1 ? 'deadline-badge-urgent' : 'deadline-badge-warning');
-                                        const badgeText = daysLeft <= 0 ? '⚠️ Today' : (daysLeft === 1 ? '⚠️ 1 day' : `⚠️ ${daysLeft} days`);
-                                        deadlineBadge = <span className={`deadline-badge ${badgeClass}`}>{badgeText}</span>;
-                                    }
+                    {/* Deadline Alerts */}
+                    {deadlineAlerts.length > 0 && (
+                        <div className="deadline-alerts">
+                            <h3 className="deadline-alerts-title">⚠️ Deadline Alerts</h3>
+                            <div className="deadline-alerts-grid">
+                                {deadlineAlerts.map(alert => {
+                                    const daysLeft = getDaysLeft(alert.deadline);
+                                    const alertClass = daysLeft <= 0 ? 'deadline-today' : (daysLeft <= 1 ? 'deadline-urgent' : 'deadline-warning');
+                                    const badgeText = daysLeft <= 0 ? 'Deadline Today' : (daysLeft === 1 ? '1 day left' : `${daysLeft} days left`);
 
                                     return (
-                                        <tr key={job.id}>
-                                            <td>{job.position_title}</td>
-                                            <td>
-                                                {formatDate(job.deadline)}
-                                                {deadlineBadge}
-                                            </td>
-                                            <td>
-                                                <span className={`status-badge status-${job.status?.toLowerCase()}`}>
-                                                    {job.status}
-                                                </span>
-                                            </td>
-                                            <td>
-                                                <div className="action-buttons">
-                                                    <Link to={`/admin/jobs/edit/${job.id}`} className="btn btn-sm btn-secondary" title="Edit Job">
-                                                        <span className="btn-icon">✏️</span>
-                                                        <span>Edit</span>
-                                                    </Link>
-                                                    <Link to={`/admin/jobs/${job.id}`} className="btn btn-sm btn-primary" title="View Job">
+                                        <div key={alert.id} className={`deadline-alert-item ${alertClass}`}>
+                                            <span className="deadline-alert-job">{alert.position_title}</span>
+                                            <span className="deadline-alert-badge">
+                                                {badgeText}
+                                            </span>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Analytics Section */}
+                    <div className="dashboard-section analytics-section">
+                        <h2>📈 Analytics Overview</h2>
+                        <div className="analytics-grid">
+                            <div className="analytics-card">
+                                <div className="analytics-label">Applicants This Month</div>
+                                <div className="analytics-value">{stats.applicationsThisMonth}</div>
+                                <div className="analytics-change">+{stats.newApplicationsWeek} this week</div>
+                            </div>
+                            <div className="analytics-card">
+                                <div className="analytics-label">Most Applied Position</div>
+                                <div className="analytics-value">{mostApplied.position_title}</div>
+                                <div className="analytics-change">{mostApplied.count} applicants</div>
+                            </div>
+                            <div className="analytics-card">
+                                <div className="analytics-label">Open Positions</div>
+                                <div className="analytics-value">{stats.openJobs}</div>
+                                <div className="analytics-change">of {stats.totalJobs} total</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Recent Applications */}
+                    <div className="dashboard-section">
+                        <div className="section-header">
+                            <h2>Recent Applicants</h2>
+                            <div className="section-filters">
+                                <div className="inline-form">
+                                    <input
+                                        type="text"
+                                        placeholder="Search applicants..."
+                                        value={appSearch}
+                                        onChange={(e) => setAppSearch(e.target.value)}
+                                        className="filter-search"
+                                    />
+                                    <select
+                                        value={appStatusFilter}
+                                        onChange={(e) => setAppStatusFilter(e.target.value)}
+                                        className="filter-select"
+                                    >
+                                        <option value="">All Status</option>
+                                        <option value="Unread">Unread</option>
+                                        <option value="Viewed">Viewed</option>
+                                        <option value="Archived">Archived</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="table-container">
+                            <table className="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Position</th>
+                                        <th>Email</th>
+                                        <th>Date Submitted</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {recentApplications.length === 0 ? (
+                                        <tr>
+                                            <td colSpan="6" className="text-center">No applicants found</td>
+                                        </tr>
+                                    ) : (
+                                        recentApplications.map(app => (
+                                            <tr key={app.id} className={app.status?.toLowerCase()}>
+                                                <td>{app.full_name}</td>
+                                                <td>{app.jobs?.position_title || 'Unknown Job'}</td>
+                                                <td>{app.email}</td>
+                                                <td>{formatDate(app.submitted_at)}</td>
+                                                <td>
+                                                    <span className={`status-badge status-${app.status?.toLowerCase()}`}>
+                                                        {app.status}
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <Link to={`/admin/applications/${app.id}`} className="btn btn-sm btn-primary" title="View Application">
                                                         <span className="btn-icon">👁️</span>
                                                         <span>View</span>
                                                     </Link>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    );
-                                })
-                            )}
-                        </tbody>
-                    </table>
-                </div>
-                <div className="text-right mt-2">
-                    <Link to="/admin/jobs" className="btn btn-link">View All Jobs →</Link>
-                </div>
-            </div>
-        </div>
-    );
-};
+                                                </td>
+                                            </tr>
+                                        ))
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div className="text-right mt-2">
+                            <Link to="/admin/applications" className="btn btn-link">View All Applicants →</Link>
+                        </div>
+                    </div>
 
-export default AdminDashboard;
+                    {/* Recent Job Postings */}
+                    <div className="dashboard-section">
+                        <div className="section-header">
+                            <h2>Recent Job Postings</h2>
+                            <div className="section-filters">
+                                <div className="inline-form">
+                                    <select
+                                        value={jobStatusFilter}
+                                        onChange={(e) => setJobStatusFilter(e.target.value)}
+                                        className="filter-select"
+                                    >
+                                        <option value="">All Status</option>
+                                        <option value="Open">Open</option>
+                                        <option value="Closed">Closed</option>
+                                        <option value="Archived">Archived</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="table-container">
+                            <table className="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Position Title</th>
+                                        <th>Deadline</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {recentJobs.length === 0 ? (
+                                        <tr>
+                                            <td colSpan="5" className="text-center">No job postings found</td>
+                                        </tr>
+                                    ) : (
+                                        recentJobs.map(job => {
+                                            const daysLeft = getDaysLeft(job.deadline);
+                                            let deadlineBadge = null;
+
+                                            if (daysLeft <= 3 && daysLeft >= 0) {
+                                                const badgeClass = daysLeft <= 0 ? 'deadline-badge-today' : (daysLeft <= 1 ? 'deadline-badge-urgent' : 'deadline-badge-warning');
+                                                const badgeText = daysLeft <= 0 ? '⚠️ Today' : (daysLeft === 1 ? '⚠️ 1 day' : `⚠️ ${daysLeft} days`);
+                                                deadlineBadge = <span className={`deadline-badge ${badgeClass}`}>{badgeText}</span>;
+                                            }
+
+                                            return (
+                                                <tr key={job.id}>
+                                                    <td>{job.position_title}</td>
+                                                    <td>
+                                                        {formatDate(job.deadline)}
+                                                        {deadlineBadge}
+                                                    </td>
+                                                    <td>
+                                                        <span className={`status-badge status-${job.status?.toLowerCase()}`}>
+                                                            {job.status}
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <div className="action-buttons">
+                                                            <Link to={`/admin/jobs/edit/${job.id}`} className="btn btn-sm btn-secondary" title="Edit Job">
+                                                                <span className="btn-icon">✏️</span>
+                                                                <span>Edit</span>
+                                                            </Link>
+                                                            <Link to={`/admin/jobs/${job.id}`} className="btn btn-sm btn-primary" title="View Job">
+                                                                <span className="btn-icon">👁️</span>
+                                                                <span>View</span>
+                                                            </Link>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            );
+                                        })
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div className="text-right mt-2">
+                            <Link to="/admin/jobs" className="btn btn-link">View All Jobs →</Link>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        export default AdminDashboard;
