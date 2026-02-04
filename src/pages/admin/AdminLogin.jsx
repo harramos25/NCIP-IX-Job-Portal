@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { useToast } from '../../context/ToastContext';
 
 import ncipLogo from '../../assets/images/ncip-logo.png';
 
 const AdminLogin = () => {
+  const { showToast } = useToast();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -16,9 +17,10 @@ const AdminLogin = () => {
 
     if (username === 'admin' && password === 'admin123') {
       localStorage.setItem('isAdminLoggedIn', 'true');
+      showToast('Welcome back, Admin!', 'success');
       navigate('/admin/dashboard');
     } else {
-      setError('Invalid username or password');
+      showToast('Invalid username or password', 'error');
     }
   };
 
@@ -31,8 +33,6 @@ const AdminLogin = () => {
           </div>
           <h1>NCIP IX JOB PORTAL</h1>
           <h2>Admin Login</h2>
-
-          {error && <div className="alert alert-error">{error}</div>}
 
           <form onSubmit={handleLogin}>
             <div className="form-group">

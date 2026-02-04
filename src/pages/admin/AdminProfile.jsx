@@ -1,8 +1,9 @@
-import React, { useState, useRef, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
 import { settingsService } from '../../services/settingsService';
+import { useToast } from '../../context/ToastContext';
 
 const AdminProfile = () => {
+    const { showToast } = useToast();
     const fileInputRef = useRef(null);
     const [uploading, setUploading] = useState(false);
     const [profile, setProfile] = useState({
@@ -73,10 +74,10 @@ const AdminProfile = () => {
             // Dispatch event for Header to pick up
             window.dispatchEvent(new Event('admin-avatar-updated'));
 
-            alert('Avatar uploaded successfully!');
+            showToast('Avatar uploaded successfully!', 'success');
         } catch (error) {
             console.error('Error uploading avatar:', error);
-            alert('Error uploading avatar: ' + error.message);
+            showToast('Error uploading avatar: ' + error.message, 'error');
         } finally {
             setUploading(false);
         }
@@ -101,7 +102,7 @@ const AdminProfile = () => {
 
             // 2. Validate Size
             if (file.size > maxFileSize) {
-                alert(`File too large! Maximum allowed size is ${localStorage.getItem('adminSettings') ? JSON.parse(localStorage.getItem('adminSettings')).maxFileSize : '5MB'}.`);
+                showToast(`File too large! Maximum allowed size is ${localStorage.getItem('adminSettings') ? JSON.parse(localStorage.getItem('adminSettings')).maxFileSize : '5MB'}.`, 'warning');
                 return;
             }
 
@@ -111,7 +112,7 @@ const AdminProfile = () => {
             const unifiedType = typeMap[fileExt];
 
             if (!unifiedType || !allowedTypes[unifiedType]) {
-                alert(`File type .${fileExt} is not allowed by system settings.`);
+                showToast(`File type .${fileExt} is not allowed by system settings.`, 'warning');
                 return;
             }
 
@@ -134,17 +135,17 @@ const AdminProfile = () => {
 
     const handleSaveProfile = (e) => {
         e.preventDefault();
-        alert('Profile updated successfully! (Mock)');
+        showToast('Profile updated successfully! (Mock)', 'success');
         // In real app, update Supabase auth/profile here
     };
 
     const handleUpdatePassword = (e) => {
         e.preventDefault();
         if (passwords.new !== passwords.confirm) {
-            alert('New passwords do not match!');
+            showToast('New passwords do not match!', 'error');
             return;
         }
-        alert('Password updated successfully! (Mock)');
+        showToast('Password updated successfully! (Mock)', 'success');
         setPasswords({ current: '', new: '', confirm: '' });
     };
 

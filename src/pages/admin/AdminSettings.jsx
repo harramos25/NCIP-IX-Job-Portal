@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import { useToast } from '../../context/ToastContext';
 
 const AdminSettings = () => {
+    const { showToast } = useToast();
     const [activeTab, setActiveTab] = useState('general');
 
     // Default Settings
@@ -44,7 +46,7 @@ const AdminSettings = () => {
         // Dispatch event for other components (like Header) to update
         window.dispatchEvent(new Event('admin-settings-updated'));
 
-        alert('Settings saved successfully!');
+        showToast('Settings saved successfully!', 'success');
     };
 
     return (
@@ -216,7 +218,7 @@ const AdminSettings = () => {
                                             setTimeout(() => {
                                                 btn.innerText = originalText;
                                                 btn.disabled = false;
-                                                alert('Database schema updated successfully! All indexes rebuilt.');
+                                                showToast('Database schema updated successfully! All indexes rebuilt.', 'success');
                                             }, 2000);
                                         }}
                                     >
@@ -229,8 +231,8 @@ const AdminSettings = () => {
                                                 localStorage.removeItem('adminSettings');
                                                 localStorage.removeItem('adminAvatarUrl');
                                                 // localStorage.removeItem('isAdminLoggedIn'); // Optional: Force logout
-                                                alert('System cache cleared. The page will now reload.');
-                                                window.location.reload();
+                                                showToast('System cache cleared. Reloading...', 'info');
+                                                setTimeout(() => window.location.reload(), 1500);
                                             }
                                         }}
                                     >

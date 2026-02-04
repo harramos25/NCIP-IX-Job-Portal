@@ -1,5 +1,6 @@
 import React from 'react';
 import { Routes, Route, Outlet } from 'react-router-dom';
+import { ToastProvider } from './context/ToastContext';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Home from './pages/Home';
@@ -20,7 +21,7 @@ import AdminSettings from './pages/admin/AdminSettings';
 
 function App() {
   return (
-    <>
+    <ToastProvider>
       <Routes>
         {/* Public Routes - Uses Default Header & Footer */}
         <Route element={
@@ -64,7 +65,7 @@ function App() {
           <Route path="settings" element={<AdminSettings />} />
         </Route>
       </Routes>
-    </>
+    </ToastProvider>
   );
 }
 

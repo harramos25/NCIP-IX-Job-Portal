@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import { useNavigate, Link } from 'react-router-dom';
+import { useToast } from '../../context/ToastContext';
 
 
 
 const AdminJobCreate = () => {
+    const { showToast } = useToast();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
@@ -30,9 +31,9 @@ const AdminJobCreate = () => {
             .insert([formData]);
 
         if (error) {
-            alert('Error creating job: ' + error.message);
+            showToast('Error creating job: ' + error.message, 'error');
         } else {
-            alert('Job created successfully!');
+            showToast('Job created successfully!', 'success');
             navigate('/admin/jobs');
         }
         setLoading(false);

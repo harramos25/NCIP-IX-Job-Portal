@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import JobCard from '../components/JobCard';
 import { useSearchParams } from 'react-router-dom';
+import { useToast } from '../context/ToastContext';
 
 export default function Home() {
+    const { showToast } = useToast();
     const [jobs, setJobs] = useState([]);
     const [loading, setLoading] = useState(true);
     const [totalJobs, setTotalJobs] = useState(0);
@@ -49,7 +51,7 @@ export default function Home() {
             console.error('Error fetching jobs:', error);
             // Display error to user
             setJobs([]);
-            window.alert(`Connection Error: ${error.message || JSON.stringify(error)}`);
+            showToast(`Connection Error: ${error.message || JSON.stringify(error)}`, 'error');
         } finally {
             setLoading(false);
         }

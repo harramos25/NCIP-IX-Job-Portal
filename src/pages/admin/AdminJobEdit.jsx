@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import { useNavigate, useParams, Link } from 'react-router-dom';
+import { useToast } from '../../context/ToastContext';
 
 
 
 const AdminJobEdit = () => {
+    const { showToast } = useToast();
     const { id } = useParams();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
@@ -32,7 +33,7 @@ const AdminJobEdit = () => {
 
             if (error) {
                 console.error(error);
-                alert('Error fetching job details.');
+                showToast('Error fetching job details.', 'error');
                 navigate('/admin/jobs');
             } else {
                 setFormData(data);
@@ -56,9 +57,9 @@ const AdminJobEdit = () => {
             .eq('id', id);
 
         if (error) {
-            alert('Error updating job: ' + error.message);
+            showToast('Error updating job: ' + error.message, 'error');
         } else {
-            alert('Job updated successfully!');
+            showToast('Job updated successfully!', 'success');
             navigate('/admin/jobs');
         }
         setSaving(false);

@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import { useParams, Link } from 'react-router-dom';
+import { useToast } from '../../context/ToastContext';
 
 
 
 const AdminApplicationView = () => {
+    const { showToast } = useToast();
     const { id } = useParams();
     const [application, setApplication] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -46,7 +47,7 @@ const AdminApplicationView = () => {
 
         if (!error) {
             setApplication(prev => ({ ...prev, status: newStatus }));
-            if (showMessage) alert(`Application marked as ${newStatus}`);
+            if (showMessage) showToast(`Application marked as ${newStatus}`, 'success');
         } else {
             console.error(error);
         }
