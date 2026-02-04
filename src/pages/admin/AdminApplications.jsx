@@ -15,7 +15,6 @@ const AdminApplications = () => {
     const fetchApplications = async () => {
         setLoading(true);
         try {
-            console.log('Fetching applications...');
             let query = supabase
                 .from('applications')
                 .select(`
@@ -23,8 +22,8 @@ const AdminApplications = () => {
                     jobs ( position_title )
                 `);
 
-            // In this specific DB, submitted_at seems to be the preferred sort key
-            query = query.order('submitted_at', { ascending: false });
+            // Standardizing on created_at for reliable sorting
+            query = query.order('created_at', { ascending: false });
 
             if (statusFilter) {
                 query = query.eq('status', statusFilter);
@@ -38,11 +37,11 @@ const AdminApplications = () => {
 
             if (error) {
                 console.error('Supabase Query Error:', error);
-                // Try fallback without join if join is the issue
+                // Fallback without join
                 const { data: fallbackData, error: fallbackError } = await supabase
                     .from('applications')
                     .select('*')
-                    .order('submitted_at', { ascending: false });
+                    .order('created_at', { ascending: false });
 
                 if (fallbackError) throw fallbackError;
                 setApplications(fallbackData || []);
@@ -50,7 +49,7 @@ const AdminApplications = () => {
                 setApplications(data || []);
             }
         } catch (error) {
-            console.error('Final Fetch Error:', error);
+            console.error('Fetch Error:', error);
         } finally {
             setLoading(false);
         }
@@ -70,14 +69,9 @@ const AdminApplications = () => {
                 {/* Header Section */}
                 <div style={{ marginBottom: '2.5rem' }}>
                     <h1 className="ats-name-header">Applicant <span style={{ color: 'var(--primary-color)' }}>Management</span></h1>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <p style={{ color: '#64748b', fontSize: '1rem', fontWeight: '500' }}>
-                            Browse and process candidate applications with the refined ATS workflow.
-                        </p>
-                        <div style={{ fontSize: '0.8rem', background: '#F1F5F9', padding: '0.25rem 0.75rem', borderRadius: '4px' }}>
-                            Debug: {loading ? 'Loading...' : `${applications.length} apps found`}
-                        </div>
-                    </div>
+                    <p style={{ color: '#64748b', fontSize: '1rem', fontWeight: '500' }}>
+                        Browse and process candidate applications with the refined ATS workflow.
+                    </p>
                 </div>
 
                 {/* Filter & Search Bar */}
