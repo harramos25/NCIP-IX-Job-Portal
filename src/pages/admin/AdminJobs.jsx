@@ -63,13 +63,7 @@ const AdminJobs = () => {
         <div className="container dashboard-container">
             <div className="page-header">
                 <div className="page-header-content">
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <h1 style={{ margin: 0 }}>Manage Job Postings</h1>
-                        <div className="live-indicator-pill" title="Real-time syncing active">
-                            <span className="live-pulse"></span>
-                            LIVE SYNC
-                        </div>
-                    </div>
+                    <h1 style={{ margin: 0 }}>Manage Job Postings</h1>
                     <p style={{ marginTop: '0.25rem' }}>View, edit, or create new job opportunities.</p>
                 </div>
                 <div className="page-header-actions">

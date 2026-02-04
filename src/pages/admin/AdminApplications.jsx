@@ -7,7 +7,6 @@ const AdminApplications = () => {
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('');
-    const [debugInfo, setDebugInfo] = useState(null);
 
     useEffect(() => {
         fetchApplications();
@@ -32,7 +31,6 @@ const AdminApplications = () => {
 
     const fetchApplications = async () => {
         setLoading(true);
-        setDebugInfo(null);
         try {
             // 1. Try with joined jobs and submitted_at (most likely correct schema)
             let query = supabase
@@ -72,7 +70,6 @@ const AdminApplications = () => {
                         .order('created_at', { ascending: false });
 
                     if (er2) {
-                        setDebugInfo(`SQL Error: ${er2.message}`);
                         throw er2;
                     }
                     setApplications(fb2 || []);
@@ -105,22 +102,11 @@ const AdminApplications = () => {
                 <div style={{ marginBottom: '2.5rem' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                <h1 className="ats-name-header" style={{ margin: 0 }}>Applicant <span style={{ color: 'var(--primary-color)' }}>Management</span></h1>
-                                <div className="live-indicator-pill" title="Real-time syncing active">
-                                    <span className="live-pulse"></span>
-                                    LIVE SYNC
-                                </div>
-                            </div>
+                            <h1 className="ats-name-header" style={{ margin: 0 }}>Applicant <span style={{ color: 'var(--primary-color)' }}>Management</span></h1>
                             <p style={{ color: '#64748b', fontSize: '1rem', fontWeight: '500', marginTop: '0.25rem' }}>
                                 Browse and process candidate applications matching your criteria.
                             </p>
                         </div>
-                        {debugInfo && (
-                            <div style={{ padding: '0.5rem 1rem', background: '#fee2e2', color: '#991b1b', borderRadius: '8px', fontSize: '0.75rem' }}>
-                                {debugInfo}
-                            </div>
-                        )}
                     </div>
                 </div>
 

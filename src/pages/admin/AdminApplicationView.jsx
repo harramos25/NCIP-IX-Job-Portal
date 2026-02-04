@@ -65,7 +65,6 @@ const AdminApplicationView = () => {
                 .eq('application_id', id);
 
             if (docsError) throw docsError;
-            console.log(`Fetched ${docs?.length || 0} documents for application ${id}`);
             setDocuments(docs || []);
 
             // Identify 2x2 Image
@@ -188,15 +187,9 @@ const AdminApplicationView = () => {
                         <div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
                                 <h1 className="ats-name-header" style={{ margin: 0 }}>{application.full_name}</h1>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                    <span className={`ats-pill ${application.status?.toLowerCase() || 'unread'}`}>
-                                        {application.status || 'Unread'}
-                                    </span>
-                                    <div className="live-indicator-pill" title="Real-time syncing active">
-                                        <span className="live-pulse"></span>
-                                        LIVE SYNC
-                                    </div>
-                                </div>
+                                <span className={`ats-pill ${application.status?.toLowerCase() || 'unread'}`}>
+                                    {application.status || 'Unread'}
+                                </span>
                             </div>
 
                             {/* Action Bar (Top Right) */}
