@@ -21,9 +21,10 @@ const AdminApplications = () => {
                     *,
                     jobs ( position_title )
                 `)
-                .order('created_at', { ascending: false });
+                .order('created_at', { ascending: false }); // Usually created_at is safer in Supabase
 
             if (statusFilter) {
+                // Ensure the status filter value matches what we store (PascalCase)
                 query = query.eq('status', statusFilter);
             }
 
@@ -32,7 +33,10 @@ const AdminApplications = () => {
             }
 
             const { data, error } = await query;
-            if (error) throw error;
+            if (error) {
+                console.error('Fetch error:', error);
+                throw error;
+            }
             setApplications(data || []);
         } catch (error) {
             console.error('Error fetching applications:', error);
