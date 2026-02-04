@@ -41,6 +41,15 @@ export default function Apply() {
         const address = formData.get('address');
 
         try {
+            // 0. Quick Size Validation
+            for (const docType of REQUIRED_DOCUMENTS) {
+                const inputName = docType.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase();
+                const fileInput = formData.get(inputName);
+                if (fileInput && fileInput.size > 5 * 1024 * 1024) { // 5MB
+                    throw new Error(`${docType} exceeds the 5MB limit. Please compress your file.`);
+                }
+            }
+
             // 1. Create Application Record
             const { data: appData, error: appError } = await supabase
                 .from('applications')
@@ -152,7 +161,7 @@ export default function Apply() {
 
                     <div className="form-section">
                         <h2>Required Documents</h2>
-                        <p className="form-note">Please upload all required documents (Max 15MB per file)</p>
+                        <p className="form-note">Please upload all required documents (Max 5MB per file)</p>
                         {REQUIRED_DOCUMENTS.map((doc, i) => (
                             <div className="form-group" key={i}>
                                 <label>{doc} *</label>
