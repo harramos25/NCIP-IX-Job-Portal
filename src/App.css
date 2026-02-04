@@ -1840,6 +1840,16 @@ body::before {
     color: #166534;
 }
 
+.ats-pill.rejected {
+    background: #fef2f2;
+    color: #b91c1c;
+}
+
+.ats-pill.archived {
+    background: #f1f5f9;
+    color: #475569;
+}
+
 /* Tabs */
 .ats-tabs-nav {
     display: flex;
