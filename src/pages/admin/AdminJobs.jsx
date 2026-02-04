@@ -14,6 +14,23 @@ const AdminJobs = () => {
         fetchJobs();
     }, [searchTerm, statusFilter]);
 
+    // Realtime subscription
+    useEffect(() => {
+        const channel = supabase
+            .channel('admin-jobs-realtime')
+            .on('postgres_changes',
+                { event: '*', schema: 'public', table: 'jobs' },
+                () => {
+                    fetchJobs();
+                }
+            )
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(channel);
+        };
+    }, []);
+
     const fetchJobs = async () => {
         setLoading(true);
         let query = supabase
@@ -46,8 +63,14 @@ const AdminJobs = () => {
         <div className="container dashboard-container">
             <div className="page-header">
                 <div className="page-header-content">
-                    <h1>Manage Job Postings</h1>
-                    <p>View, edit, or create new job opportunities.</p>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <h1 style={{ margin: 0 }}>Manage Job Postings</h1>
+                        <div className="live-indicator-pill" title="Real-time syncing active">
+                            <span className="live-pulse"></span>
+                            LIVE SYNC
+                        </div>
+                    </div>
+                    <p style={{ marginTop: '0.25rem' }}>View, edit, or create new job opportunities.</p>
                 </div>
                 <div className="page-header-actions">
                     <Link to="/admin/jobs/create" className="btn btn-primary">

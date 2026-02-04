@@ -186,8 +186,14 @@ const AdminDashboard = () => {
         <div className="container dashboard-container">
             <div className="page-header">
                 <div className="page-header-content">
-                    <h1>Dashboard</h1>
-                    <p>Welcome back, NCIP Admin!</p>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <h1 style={{ margin: 0 }}>Dashboard</h1>
+                        <div className="live-indicator-pill" title="Real-time syncing active">
+                            <span className="live-pulse"></span>
+                            LIVE SYNC
+                        </div>
+                    </div>
+                    <p style={{ marginTop: '0.25rem' }}>Welcome back, NCIP Admin!</p>
                 </div>
             </div>
 

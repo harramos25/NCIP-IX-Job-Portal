@@ -20,6 +20,30 @@ const AdminApplicationView = () => {
         fetchApplicationDetails();
     }, [id]);
 
+    // Realtime subscription for single application & its documents
+    useEffect(() => {
+        const appChannel = supabase
+            .channel(`admin-app-detail-${id}`)
+            .on('postgres_changes',
+                { event: '*', schema: 'public', table: 'applications', filter: `id=eq.${id}` },
+                () => fetchApplicationDetails()
+            )
+            .subscribe();
+
+        const docsChannel = supabase
+            .channel(`admin-docs-realtime-${id}`)
+            .on('postgres_changes',
+                { event: '*', schema: 'public', table: 'application_documents', filter: `application_id=eq.${id}` },
+                () => fetchApplicationDetails()
+            )
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(appChannel);
+            supabase.removeChannel(docsChannel);
+        };
+    }, [id]);
+
     const fetchApplicationDetails = async () => {
         setLoading(true);
         try {
@@ -41,6 +65,7 @@ const AdminApplicationView = () => {
                 .eq('application_id', id);
 
             if (docsError) throw docsError;
+            console.log(`Fetched ${docs?.length || 0} documents for application ${id}`);
             setDocuments(docs || []);
 
             // Identify 2x2 Image
@@ -161,36 +186,44 @@ const AdminApplicationView = () => {
                     </nav>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                         <div>
-                            <h1 className="ats-name-header">{application.full_name}</h1>
-                            <span className={`ats-pill ${application.status?.toLowerCase() || 'unread'}`}>
-                                {application.status || 'Unread'}
-                            </span>
-                        </div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                                <h1 className="ats-name-header" style={{ margin: 0 }}>{application.full_name}</h1>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    <span className={`ats-pill ${application.status?.toLowerCase() || 'unread'}`}>
+                                        {application.status || 'Unread'}
+                                    </span>
+                                    <div className="live-indicator-pill" title="Real-time syncing active">
+                                        <span className="live-pulse"></span>
+                                        LIVE SYNC
+                                    </div>
+                                </div>
+                            </div>
 
-                        {/* Action Bar (Top Right) */}
-                        <div style={{ display: 'flex', gap: '0.75rem' }}>
-                            <button
-                                onClick={() => updateStatus(application.id, 'Shortlisted')}
-                                className="ats-btn ats-btn-primary"
-                                disabled={statusUpdating}
-                            >Shortlist</button>
-                            <button
-                                onClick={() => updateStatus(application.id, 'Rejected')}
-                                className="ats-btn ats-btn-outline-red"
-                                disabled={statusUpdating}
-                            >Reject</button>
-                            <button
-                                onClick={() => updateStatus(application.id, 'Archived')}
-                                className="ats-btn ats-btn-ghost"
-                                disabled={statusUpdating}
-                            >Archive</button>
-                            <button
-                                onClick={handleDelete}
-                                className="ats-btn ats-btn-outline-red"
-                                style={{ borderStyle: 'dashed', opacity: 0.8 }}
-                                disabled={statusUpdating}
-                                title="Permanently delete all data"
-                            >Delete Info</button>
+                            {/* Action Bar (Top Right) */}
+                            <div style={{ display: 'flex', gap: '0.75rem' }}>
+                                <button
+                                    onClick={() => updateStatus(application.id, 'Shortlisted')}
+                                    className="ats-btn ats-btn-primary"
+                                    disabled={statusUpdating}
+                                >Shortlist</button>
+                                <button
+                                    onClick={() => updateStatus(application.id, 'Rejected')}
+                                    className="ats-btn ats-btn-outline-red"
+                                    disabled={statusUpdating}
+                                >Reject</button>
+                                <button
+                                    onClick={() => updateStatus(application.id, 'Archived')}
+                                    className="ats-btn ats-btn-ghost"
+                                    disabled={statusUpdating}
+                                >Archive</button>
+                                <button
+                                    onClick={handleDelete}
+                                    className="ats-btn ats-btn-outline-red"
+                                    style={{ borderStyle: 'dashed', opacity: 0.8 }}
+                                    disabled={statusUpdating}
+                                    title="Permanently delete all data"
+                                >Delete Info</button>
+                            </div>
                         </div>
                     </div>
                 </header>
@@ -206,14 +239,15 @@ const AdminApplicationView = () => {
                                     alt="2x2"
                                     style={{
                                         width: '80px', height: '80px', borderRadius: '50%',
-                                        objectFit: 'cover', border: '2px solid #F1F5F9',
-                                        margin: '0 auto 1rem'
+                                        background: 'rgb(241, 245, 249)', margin: '0px auto 1rem',
+                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                        fontSize: '2rem', objectFit: 'cover'
                                     }}
                                 />
                             ) : (
                                 <div style={{
-                                    width: '80px', height: '80px', borderRadius: '50%', background: '#F1F5F9',
-                                    margin: '0 auto 1rem', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                    width: '80px', height: '80px', borderRadius: '50%', background: 'rgb(241, 245, 249)',
+                                    margin: '0px auto 1rem', display: 'flex', alignItems: 'center', justifyContent: 'center',
                                     fontSize: '2rem'
                                 }}>👤</div>
                             )}
@@ -257,7 +291,7 @@ const AdminApplicationView = () => {
                             <div
                                 className={`ats-tab-link ${activeTab === 'documents' ? 'active' : ''}`}
                                 onClick={() => setActiveTab('documents')}
-                            >Submitted Documents</div>
+                            >Submitted Documents ({documents.length})</div>
                             <div
                                 className={`ats-tab-link ${activeTab === 'notes' ? 'active' : ''}`}
                                 onClick={() => setActiveTab('notes')}
@@ -317,7 +351,7 @@ const AdminApplicationView = () => {
                 type="danger"
                 isLoading={statusUpdating}
             />
-        </div>
+        </div >
     );
 };
 

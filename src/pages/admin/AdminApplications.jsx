@@ -13,6 +13,23 @@ const AdminApplications = () => {
         fetchApplications();
     }, [searchTerm, statusFilter]);
 
+    // Realtime subscription
+    useEffect(() => {
+        const channel = supabase
+            .channel('admin-apps-realtime')
+            .on('postgres_changes',
+                { event: '*', schema: 'public', table: 'applications' },
+                () => {
+                    fetchApplications();
+                }
+            )
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(channel);
+        };
+    }, []);
+
     const fetchApplications = async () => {
         setLoading(true);
         setDebugInfo(null);
@@ -88,8 +105,14 @@ const AdminApplications = () => {
                 <div style={{ marginBottom: '2.5rem' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <div>
-                            <h1 className="ats-name-header">Applicant <span style={{ color: 'var(--primary-color)' }}>Management</span></h1>
-                            <p style={{ color: '#64748b', fontSize: '1rem', fontWeight: '500' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                <h1 className="ats-name-header" style={{ margin: 0 }}>Applicant <span style={{ color: 'var(--primary-color)' }}>Management</span></h1>
+                                <div className="live-indicator-pill" title="Real-time syncing active">
+                                    <span className="live-pulse"></span>
+                                    LIVE SYNC
+                                </div>
+                            </div>
+                            <p style={{ color: '#64748b', fontSize: '1rem', fontWeight: '500', marginTop: '0.25rem' }}>
                                 Browse and process candidate applications matching your criteria.
                             </p>
                         </div>
