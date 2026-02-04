@@ -1,3 +1,4 @@
+import React, { useState, useEffect, useRef } from 'react';
 import { supabase } from '../../lib/supabase';
 import { settingsService } from '../../services/settingsService';
 import { useToast } from '../../context/ToastContext';
