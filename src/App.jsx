@@ -1,6 +1,7 @@
 import React from 'react';
 import { Routes, Route, Outlet } from 'react-router-dom';
 import { ToastProvider } from './context/ToastContext';
+import ScrollToTop from './components/common/ScrollToTop';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Home from './pages/Home';
@@ -23,6 +24,7 @@ import AdminSettings from './pages/admin/AdminSettings';
 function App() {
   return (
     <ToastProvider>
+      <ScrollToTop />
       <Routes>
         {/* Public Routes - Uses Default Header & Footer */}
         <Route element={
