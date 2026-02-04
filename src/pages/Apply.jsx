@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useToast } from '../context/ToastContext';
 
@@ -15,6 +15,7 @@ const REQUIRED_DOCUMENTS = [
 export default function Apply() {
     const { showToast } = useToast();
     const { id } = useParams();
+    const navigate = useNavigate();
     const [job, setJob] = useState(null);
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
@@ -94,7 +95,11 @@ export default function Apply() {
 
             await Promise.all(uploadPromises);
             showToast('Your application has been submitted successfully!', 'success');
-            e.target.reset();
+
+            // Redirect to Job Vacancies (Home) after success toast
+            setTimeout(() => {
+                navigate('/');
+            }, 2000);
 
         } catch (err) {
             console.error('Submission error:', err);
