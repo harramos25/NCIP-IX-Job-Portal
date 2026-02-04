@@ -108,12 +108,16 @@ const AdminApplicationView = () => {
             }
 
             // 3. Delete application
-            const { error: deleteError } = await supabase
+            const { error: deleteError, count } = await supabase
                 .from('applications')
-                .delete()
+                .delete({ count: 'exact' })
                 .eq('id', id);
 
             if (deleteError) throw deleteError;
+
+            if (count === 0) {
+                throw new Error('Deletion failed: Record not found or Permission denied by RLS.');
+            }
 
             showToast('Applicant and all data deleted successfully', 'success');
             navigate('/admin/applications');
