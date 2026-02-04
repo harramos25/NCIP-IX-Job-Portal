@@ -14,6 +14,7 @@ import AdminHeader from './components/AdminHeader';
 import AdminJobs from './pages/admin/AdminJobs';
 import AdminJobCreate from './pages/admin/AdminJobCreate';
 import AdminJobEdit from './pages/admin/AdminJobEdit';
+import AdminJobView from './pages/admin/AdminJobView';
 import AdminApplications from './pages/admin/AdminApplications';
 import AdminApplicationView from './pages/admin/AdminApplicationView';
 import AdminProfile from './pages/admin/AdminProfile';
@@ -58,7 +59,7 @@ function App() {
           <Route path="jobs" element={<AdminJobs />} />
           <Route path="jobs/create" element={<AdminJobCreate />} />
           <Route path="jobs/edit/:id" element={<AdminJobEdit />} />
-          <Route path="jobs/:id" element={<AdminJobEdit />} /> {/* Re-using Edit for View for now, or create separate View */}
+          <Route path="jobs/:id" element={<AdminJobView />} />
           <Route path="applications" element={<AdminApplications />} />
           <Route path="applications/:id" element={<AdminApplicationView />} />
           <Route path="profile" element={<AdminProfile />} />
