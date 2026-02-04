@@ -19,7 +19,6 @@ const AdminJobEdit = () => {
         job_description: '',
         salary_grade: '',
         qualifications: '',
-        required_documents: '',
         deadline: '',
         status: 'Open'
     });
@@ -105,10 +104,6 @@ const AdminJobEdit = () => {
                         <textarea name="qualifications" rows="4" required value={formData.qualifications} onChange={handleChange} className="form-textarea"></textarea>
                     </div>
 
-                    <div className="form-group">
-                        <label>Required Documents</label>
-                        <textarea name="required_documents" rows="4" required value={formData.required_documents} onChange={handleChange} className="form-textarea"></textarea>
-                    </div>
 
                     <div className="form-group">
                         <label>Status</label>

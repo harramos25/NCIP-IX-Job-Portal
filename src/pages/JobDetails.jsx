@@ -66,12 +66,6 @@ export default function JobDetails() {
                     </div>
                 </div>
 
-                <div className="job-section">
-                    <h2>Required Documents</h2>
-                    <div className="job-content" style={{ whiteSpace: 'pre-wrap' }}>
-                        {job.required_documents}
-                    </div>
-                </div>
 
                 <div className="job-deadline-box">
                     <strong>Application Deadline:</strong> {formatDate(job.deadline)}
