@@ -156,8 +156,8 @@ export default function Apply() {
                             </div>
                         </div>
                         <div className="form-group">
-                            <label htmlFor="facebook_name">Facebook Name / Profile Link</label>
-                            <input type="text" id="facebook_name" name="facebook_name" placeholder="Also used for verification purpose" />
+                            <label htmlFor="facebook_name">Facebook Account Name</label>
+                            <input type="text" id="facebook_name" name="facebook_name" placeholder="e.g. Juan De La Cruz (Used for verification)" />
                         </div>
                         <div className="form-group">
                             <label htmlFor="address">Address *</label>

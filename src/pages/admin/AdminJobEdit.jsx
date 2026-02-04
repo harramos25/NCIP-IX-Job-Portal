@@ -85,7 +85,7 @@ const AdminJobEdit = () => {
                         </div>
 
                         <div className="form-group">
-                            <label>Facebook Contact / Page (Optional)</label>
+                            <label>Facebook Account Name (Optional)</label>
                             <input type="text" name="facebook_name" value={formData.facebook_name || ''} onChange={handleChange} className="form-input" placeholder="e.g. NCIP Region IX" />
                         </div>
 

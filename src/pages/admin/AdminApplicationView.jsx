@@ -327,11 +327,7 @@ const AdminApplicationView = () => {
                                 <div>
                                     <div className="ats-label">FACEBOOK</div>
                                     <div className="ats-value">
-                                        {application.facebook_name ? (
-                                            application.facebook_name.startsWith('http') ?
-                                                <a href={application.facebook_name} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--primary-color)' }}>View Profile</a> :
-                                                application.facebook_name
-                                        ) : 'N/A'}
+                                        {application.facebook_name || 'N/A'}
                                     </div>
                                 </div>
                             </div>
