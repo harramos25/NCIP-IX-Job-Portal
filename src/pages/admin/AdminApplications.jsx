@@ -187,10 +187,11 @@ const AdminApplications = () => {
                                             <td style={{ padding: '1.25rem', textAlign: 'right' }}>
                                                 <Link
                                                     to={`/admin/applications/${app.id}`}
-                                                    className="ats-btn ats-btn-ghost"
-                                                    style={{ fontSize: '0.75rem', fontWeight: '800' }}
+                                                    className="btn btn-sm btn-primary"
+                                                    title="View Profile"
                                                 >
-                                                    VIEW PROFILE
+                                                    <span className="btn-icon">👁️</span>
+                                                    <span>View</span>
                                                 </Link>
                                             </td>
                                         </tr>

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useToast } from '../../context/ToastContext';
+import ConfirmationModal from '../../components/common/ConfirmationModal';
 
 const AdminApplicationView = () => {
     const { showToast } = useToast();
@@ -12,6 +13,7 @@ const AdminApplicationView = () => {
     const [loading, setLoading] = useState(true);
     const [statusUpdating, setStatusUpdating] = useState(false);
     const [activeTab, setActiveTab] = useState('documents');
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
     useEffect(() => {
         fetchApplicationDetails();
@@ -77,11 +79,12 @@ const AdminApplicationView = () => {
         }
     };
 
-    const handleDelete = async () => {
-        if (!window.confirm('Are you absolutely sure you want to delete this applicant? This will permanently remove all personal data and uploaded documents.')) {
-            return;
-        }
+    const handleDelete = () => {
+        setIsDeleteModalOpen(true);
+    };
 
+    const performDelete = async () => {
+        setIsDeleteModalOpen(false);
         setStatusUpdating(true);
         try {
             // 1. Get associated document paths
@@ -101,11 +104,10 @@ const AdminApplicationView = () => {
 
                 if (storageError) {
                     console.warn('Storage cleanup warning:', storageError);
-                    // Continue anyway to ensure record is deleted even if storage cleanup fails partially
                 }
             }
 
-            // 3. Delete application (Cascade should handle application_documents)
+            // 3. Delete application
             const { error: deleteError } = await supabase
                 .from('applications')
                 .delete()
@@ -278,6 +280,17 @@ const AdminApplicationView = () => {
 
                 </div>
             </div>
+
+            <ConfirmationModal
+                isOpen={isDeleteModalOpen}
+                onClose={() => setIsDeleteModalOpen(false)}
+                onConfirm={performDelete}
+                title="Delete Applicant Data"
+                message="Are you absolutely sure? This will permanently remove all personal information and uploaded files from the system. This action cannot be undone."
+                confirmText="Delete Permanently"
+                type="danger"
+                isLoading={statusUpdating}
+            />
         </div>
     );
 };
