@@ -1861,6 +1861,65 @@ body::before {
     color: #475569;
 }
 
+/* Glassmorphism System V4 */
+.glass-card-premium {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(12px) saturate(180%);
+    -webkit-backdrop-filter: blur(12px) saturate(180%);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07),
+        0 0 0 1px rgba(255, 255, 255, 0.2) inset;
+    padding: 2.5rem;
+    transition: all 0.3s ease;
+}
+
+.glass-card-premium:hover {
+    background: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.1);
+}
+
+.ats-label-premium {
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #94A3B8;
+    margin-bottom: 0.25rem;
+    display: block;
+}
+
+.ats-value-premium {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #1E293B;
+    margin: 0;
+}
+
+.premium-sidebar-item {
+    padding: 1.25rem;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.premium-icon-circle {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+}
+
 /* Tabs */
 .ats-tabs-nav {
     display: flex;
