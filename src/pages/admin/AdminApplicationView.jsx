@@ -57,21 +57,24 @@ const AdminApplicationView = () => {
         if (showMessage) setStatusUpdating(true);
 
         try {
+            // Ensure status casing matches expected values
+            const normalizedStatus = newStatus.charAt(0).toUpperCase() + newStatus.slice(1).toLowerCase();
+
             const { error } = await supabase
                 .from('applications')
-                .update({ status: newStatus })
+                .update({ status: normalizedStatus })
                 .eq('id', appId);
 
             if (error) throw error;
 
             if (showMessage) {
-                showToast(`Application successfully marking as ${newStatus}`, 'success');
-                // Redirect back to applicants list after action
+                showToast(`Application successfully marked as ${normalizedStatus}`, 'success');
+                // Brief delay before redirecting to let the user see the success
                 setTimeout(() => {
                     navigate('/admin/applications');
                 }, 1500);
             } else {
-                setApplication(prev => ({ ...prev, status: newStatus }));
+                setApplication(prev => ({ ...prev, status: normalizedStatus }));
             }
         } catch (error) {
             console.error('Update error:', error);
@@ -90,154 +93,176 @@ const AdminApplicationView = () => {
     };
 
     if (loading) return <div className="container py-5 text-center"><div className="loader">Loading application details...</div></div>;
-    if (!application) return <div className="container py-5 text-center"><h2>Application not found</h2><Link to="/admin/applications" className="btn btn-primary mt-3">Back to List</Link></div>;
+    if (!application) return (
+        <div className="container py-5 text-center">
+            <h2 className="premium-title">Not Found</h2>
+            <p className="premium-subtitle">The application record could not be located.</p>
+            <Link to="/admin/applications" className="btn btn-primary mt-4" style={{ borderRadius: '1rem' }}>Back to Applicants</Link>
+        </div>
+    );
 
     return (
         <div className="admin-view-root">
-            {/* Background Decorations */}
+            {/* Premium Background Decorations */}
             <div className="bg-glow glow-1"></div>
             <div className="bg-glow glow-2"></div>
+            <div className="bg-glow glow-3"></div>
 
             <div className="container" style={{ position: 'relative', zIndex: 1 }}>
-                <div className="page-header" style={{ marginBottom: '3rem' }}>
-                    <div className="page-header-content">
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
-                            <Link to="/admin/applications" className="btn-link" style={{
-                                background: 'rgba(255,255,255,0.4)',
-                                padding: '0.5rem 1rem',
+
+                {/* Header Section */}
+                <div style={{ marginBottom: '4rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '2rem' }}>
+                    <div>
+                        <div style={{ marginBottom: '1.5rem' }}>
+                            <Link to="/admin/applications" style={{
+                                background: 'rgba(255,255,255,0.5)',
+                                padding: '0.6rem 1.25rem',
                                 borderRadius: '1rem',
-                                fontSize: '0.85rem',
+                                fontSize: '0.8rem',
                                 color: 'var(--primary-dark)',
-                                textDecoration: 'none'
-                            }}>← BACK TO LIST</Link>
+                                textDecoration: 'none',
+                                fontWeight: '700',
+                                border: '1px solid rgba(255,255,255,0.7)',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '0.5rem'
+                            }}>← BACK TO APPLICANTS</Link>
                         </div>
-                        <h1 style={{ fontSize: '3rem', fontWeight: '900', color: 'var(--primary-dark)', letterSpacing: '-0.02em', margin: 0 }}>
-                            Application <span style={{ color: 'var(--primary-color)' }}>Details</span>
+                        <h1 className="premium-title">
+                            Application <span style={{ color: 'var(--primary-color)' }}>Review</span>
                         </h1>
+                        <p className="premium-subtitle">Evaluating candidate submission for the role of <strong>{application.jobs?.position_title}</strong></p>
                     </div>
-                    <div className="page-header-actions" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.5rem' }}>
-                        <span style={{ fontSize: '0.75rem', fontWeight: '800', color: 'var(--primary-color)', letterSpacing: '0.1em' }}>STATUS</span>
-                        <span className={`status-badge status-${application.status?.toLowerCase()}`} style={{ fontSize: '1.1rem', padding: '0.75rem 1.5rem', borderRadius: '1rem' }}>
+
+                    <div style={{ textAlign: 'right' }}>
+                        <div style={{ fontSize: '0.75rem', fontWeight: '900', color: 'var(--primary-color)', letterSpacing: '0.15em', marginBottom: '0.5rem' }}>CURRENT STATUS</div>
+                        <div className={`status-badge status-${application.status?.toLowerCase()}`} style={{
+                            fontSize: '1.25rem',
+                            padding: '1rem 2rem',
+                            borderRadius: '1.5rem',
+                            boxShadow: '0 8px 20px rgba(0,0,0,0.1)',
+                            border: '2px solid white'
+                        }}>
                             {application.status?.toUpperCase()}
-                        </span>
-                    </div>
-                </div>
-
-                <div className="glass-card">
-                    <div className="card-header-v2">
-                        <h2><span>👤</span> Applicant Profile</h2>
-                    </div>
-                    <div className="grid-detailed">
-                        <div className="info-box">
-                            <label>Full Name</label>
-                            <div className="val">{application.full_name}</div>
-                        </div>
-                        <div className="info-box">
-                            <label>Email Address</label>
-                            <div className="val">
-                                <a href={`mailto:${application.email}`} style={{ color: 'var(--primary-color)', textDecoration: 'none' }}>
-                                    {application.email}
-                                </a>
-                            </div>
-                        </div>
-                        <div className="info-box">
-                            <label>Phone Number</label>
-                            <div className="val">{application.phone_number || 'N/A'}</div>
-                        </div>
-                        <div className="info-box">
-                            <label>Permanent Address</label>
-                            <div className="val">{application.address || 'N/A'}</div>
-                        </div>
-                        <div className="info-box" style={{ gridColumn: '1 / -1', background: 'rgba(51, 78, 172, 0.05)', borderColor: 'rgba(51, 78, 172, 0.1)' }}>
-                            <label>Applied For Position</label>
-                            <div className="val" style={{ fontSize: '1.5rem', fontWeight: '800', color: 'var(--primary-dark)' }}>
-                                {application.jobs?.position_title}
-                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div className="glass-card">
-                    <div className="card-header-v2">
-                        <h2><span>📄</span> Submitted Documents</h2>
-                        <span style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', fontWeight: '500' }}>{documents.length} Files Attached</span>
+                {/* Main Premium Layout */}
+                <div className="premium-layout">
+
+                    {/* Left Column: Profile */}
+                    <div className="glass-card-v3">
+                        <h2 style={{ fontSize: '1.5rem', fontWeight: '800', marginBottom: '2.5rem', color: 'var(--primary-dark)', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                            <span style={{ fontSize: '1.75rem' }}>👤</span> Candidate Profile
+                        </h2>
+
+                        <div className="info-pill">
+                            <label>FULL LEGAL NAME</label>
+                            <div className="value">{application.full_name}</div>
+                        </div>
+
+                        <div className="info-pill">
+                            <label>CONTACT EMAIL</label>
+                            <div className="value">
+                                <a href={`mailto:${application.email}`} style={{ color: 'inherit', textDecoration: 'none' }}>{application.email}</a>
+                            </div>
+                        </div>
+
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+                            <div className="info-pill">
+                                <label>PHONE</label>
+                                <div className="value">{application.phone_number || 'N/A'}</div>
+                            </div>
+                            <div className="info-pill">
+                                <label>SUBMITTED ON</label>
+                                <div className="value">{new Date(application.created_at).toLocaleDateString()}</div>
+                            </div>
+                        </div>
+
+                        <div className="info-pill">
+                            <label>RESIDENTIAL ADDRESS</label>
+                            <div className="value">{application.address || 'N/A'}</div>
+                        </div>
                     </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-                        {documents.length > 0 ? (
-                            documents.map((doc) => (
-                                <div key={doc.id} className="doc-pill">
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
-                                        <div style={{
-                                            width: '50px',
-                                            height: '50px',
-                                            borderRadius: '1rem',
-                                            background: 'white',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            fontSize: '1.25rem',
-                                            boxShadow: '0 4px 10px rgba(0,0,0,0.05)'
-                                        }}>📂</div>
-                                        <div>
-                                            <div style={{ fontWeight: '700', color: 'var(--primary-dark)', fontSize: '1.05rem' }}>{doc.document_type}</div>
-                                            <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: '500' }}>
-                                                {formatSize(doc.file_size)} • PDF DOCUMENT
+
+                    {/* Right Column: Documents & Actions */}
+                    <div>
+                        <div className="glass-card-v3" style={{ padding: '2.5rem' }}>
+                            <h2 style={{ fontSize: '1.5rem', fontWeight: '800', marginBottom: '2rem', color: 'var(--primary-dark)', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                                <span style={{ fontSize: '1.75rem' }}>📂</span> Documents
+                            </h2>
+
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                                {documents.length > 0 ? (
+                                    documents.map((doc) => (
+                                        <div key={doc.id} className="doc-link-card">
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                                                <div style={{ fontSize: '1.5rem' }}>📄</div>
+                                                <div>
+                                                    <div style={{ fontWeight: '700', fontSize: '0.95rem' }}>{doc.document_type}</div>
+                                                    <div style={{ fontSize: '0.75rem', opacity: 0.6 }}>PDF • {formatSize(doc.file_size)}</div>
+                                                </div>
                                             </div>
+                                            <a
+                                                href={`${supabase.storage.from('documents').getPublicUrl(doc.file_path).data.publicUrl}`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                style={{
+                                                    padding: '0.5rem 1rem',
+                                                    borderRadius: '0.75rem',
+                                                    background: 'var(--primary-bg)',
+                                                    color: 'var(--primary-dark)',
+                                                    textDecoration: 'none',
+                                                    fontSize: '0.8rem',
+                                                    fontWeight: '700'
+                                                }}
+                                            >VIEW</a>
                                         </div>
+                                    ))
+                                ) : (
+                                    <div style={{ padding: '2rem', textAlign: 'center', opacity: 0.5, fontStyle: 'italic' }}>
+                                        No documents attached.
                                     </div>
-                                    <a
-                                        href={`${supabase.storage.from('documents').getPublicUrl(doc.file_path).data.publicUrl}`}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="btn btn-primary"
-                                        style={{ borderRadius: '1rem', padding: '0.6rem 1.5rem', fontWeight: '600' }}
-                                    >
-                                        VIEW DOCUMENT
-                                    </a>
-                                </div>
-                            ))
-                        ) : (
-                            <div style={{ textAlign: 'center', padding: '4rem', background: 'rgba(0,0,0,0.02)', borderRadius: '2rem', border: '2px dashed rgba(0,0,0,0.05)' }}>
-                                <div style={{ fontSize: '3rem', marginBottom: '1rem', opacity: 0.3 }}>📁</div>
-                                <p style={{ color: 'var(--text-secondary)', fontWeight: '600' }}>No documents found for this application.</p>
+                                )}
                             </div>
-                        )}
-                    </div>
-                </div>
+                        </div>
 
-                <div className="glass-card" style={{ background: 'rgba(255, 255, 255, 0.6)' }}>
-                    <div className="card-header-v2">
-                        <h2><span>⚡</span> Administrative Actions</h2>
+                        {/* Actions Row */}
+                        <div className="glass-card-v3" style={{ padding: '2rem' }}>
+                            <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
+                                <h3 style={{ fontSize: '1.1rem', fontWeight: '800', color: 'var(--primary-dark)', margin: 0 }}>ADMINISTRATIVE ACTIONS</h3>
+                                <p style={{ fontSize: '0.8rem', opacity: 0.6, marginTop: '0.25rem' }}>Direct status updates for this candidate</p>
+                            </div>
+
+                            <div className="action-bar-horizontal">
+                                <button
+                                    onClick={() => updateStatus(application.id, 'Shortlisted')}
+                                    className="btn-premium shortlist"
+                                    disabled={statusUpdating}
+                                    title="Shortlist Candidate"
+                                >
+                                    <span>✅</span> SHORTLIST
+                                </button>
+                                <button
+                                    onClick={() => updateStatus(application.id, 'Rejected')}
+                                    className="btn-premium reject"
+                                    disabled={statusUpdating}
+                                    title="Reject Application"
+                                >
+                                    <span>❌</span> REJECT
+                                </button>
+                                <button
+                                    onClick={() => updateStatus(application.id, 'Archived')}
+                                    className="btn-premium archive"
+                                    disabled={statusUpdating}
+                                    title="Archive Record"
+                                >
+                                    <span>📦</span> ARCHIVE
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                    <div className="action-bar" style={{ gap: '1.5rem' }}>
-                        <button
-                            onClick={() => updateStatus(application.id, 'Shortlisted')}
-                            className="btn btn-success btn-action-p"
-                            disabled={statusUpdating}
-                            style={{ background: '#10b981', color: 'white', border: 'none' }}
-                        >
-                            <span>✅</span> SHORTLIST CANDIDATE
-                        </button>
-                        <button
-                            onClick={() => updateStatus(application.id, 'Rejected')}
-                            className="btn btn-danger btn-action-p"
-                            disabled={statusUpdating}
-                            style={{ background: '#ef4444', color: 'white', border: 'none' }}
-                        >
-                            <span>❌</span> REJECT APPLICATION
-                        </button>
-                        <button
-                            onClick={() => updateStatus(application.id, 'Archived')}
-                            className="btn btn-secondary btn-action-p"
-                            disabled={statusUpdating}
-                            style={{ background: '#64748b', color: 'white', border: 'none' }}
-                        >
-                            <span>📦</span> ARCHIVE RECORD
-                        </button>
-                    </div>
-                    <p style={{ marginTop: '2rem', fontSize: '0.85rem', color: 'var(--text-secondary)', fontStyle: 'italic' }}>
-                        * Taking an action will automatically save the status and return you to the applicants list.
-                    </p>
                 </div>
             </div>
         </div>

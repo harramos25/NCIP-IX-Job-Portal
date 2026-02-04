@@ -48,7 +48,8 @@ export default function Apply() {
                     full_name: fullName,
                     email: email,
                     phone_number: phone,
-                    address: address
+                    address: address,
+                    status: 'Unread'
                 }])
                 .select()
                 .single();
