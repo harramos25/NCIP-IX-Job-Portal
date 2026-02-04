@@ -188,13 +188,6 @@ const AdminDashboard = () => {
                 <div className="page-header-content">
                     <h1>Dashboard</h1>
                     <p>Welcome back, NCIP Admin!</p>
-                    <div style={{
-                        marginTop: '1.5rem',
-                        height: '3px',
-                        width: '60px',
-                        backgroundColor: '#334EAC',
-                        borderRadius: '2px'
-                    }}></div>
                 </div>
             </div>
 
