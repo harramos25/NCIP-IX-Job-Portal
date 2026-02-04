@@ -7,6 +7,7 @@ const AdminApplications = () => {
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('');
+    const [debugInfo, setDebugInfo] = useState(null);
 
     useEffect(() => {
         fetchApplications();
@@ -14,16 +15,16 @@ const AdminApplications = () => {
 
     const fetchApplications = async () => {
         setLoading(true);
+        setDebugInfo(null);
         try {
+            // 1. Try with joined jobs and submitted_at (most likely correct schema)
             let query = supabase
                 .from('applications')
                 .select(`
                     *,
                     jobs ( position_title )
-                `);
-
-            // Standardizing on created_at for reliable sorting
-            query = query.order('created_at', { ascending: false });
+                `)
+                .order('submitted_at', { ascending: false });
 
             if (statusFilter) {
                 query = query.eq('status', statusFilter);
@@ -36,28 +37,45 @@ const AdminApplications = () => {
             const { data, error } = await query;
 
             if (error) {
-                console.error('Supabase Query Error:', error);
-                // Fallback without join
-                const { data: fallbackData, error: fallbackError } = await supabase
+                console.error('Core Query Fail (Join/submitted_at):', error);
+
+                // 2. Fallback: try without join
+                const { data: fb1, error: er1 } = await supabase
                     .from('applications')
                     .select('*')
-                    .order('created_at', { ascending: false });
+                    .order('submitted_at', { ascending: false });
 
-                if (fallbackError) throw fallbackError;
-                setApplications(fallbackData || []);
+                if (er1) {
+                    console.error('Fallback 1 Fail (submitted_at):', er1);
+
+                    // 3. Last stand: try created_at without join
+                    const { data: fb2, error: er2 } = await supabase
+                        .from('applications')
+                        .select('*')
+                        .order('created_at', { ascending: false });
+
+                    if (er2) {
+                        setDebugInfo(`SQL Error: ${er2.message}`);
+                        throw er2;
+                    }
+                    setApplications(fb2 || []);
+                } else {
+                    setApplications(fb1 || []);
+                }
             } else {
                 setApplications(data || []);
             }
         } catch (error) {
-            console.error('Fetch Error:', error);
+            console.error('Comprehensive Fetch Fail:', error);
         } finally {
             setLoading(false);
         }
     };
 
-    const formatDate = (dateString) => {
-        if (!dateString) return 'N/A';
-        return new Date(dateString).toLocaleDateString('en-US', {
+    const formatDate = (dateString, altDate) => {
+        const d = dateString || altDate;
+        if (!d) return 'N/A';
+        return new Date(d).toLocaleDateString('en-US', {
             month: 'short', day: 'numeric', year: 'numeric'
         });
     };
@@ -68,10 +86,19 @@ const AdminApplications = () => {
 
                 {/* Header Section */}
                 <div style={{ marginBottom: '2.5rem' }}>
-                    <h1 className="ats-name-header">Applicant <span style={{ color: 'var(--primary-color)' }}>Management</span></h1>
-                    <p style={{ color: '#64748b', fontSize: '1rem', fontWeight: '500' }}>
-                        Browse and process candidate applications with the refined ATS workflow.
-                    </p>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div>
+                            <h1 className="ats-name-header">Applicant <span style={{ color: 'var(--primary-color)' }}>Management</span></h1>
+                            <p style={{ color: '#64748b', fontSize: '1rem', fontWeight: '500' }}>
+                                Browse and process candidate applications matching your criteria.
+                            </p>
+                        </div>
+                        {debugInfo && (
+                            <div style={{ padding: '0.5rem 1rem', background: '#fee2e2', color: '#991b1b', borderRadius: '8px', fontSize: '0.75rem' }}>
+                                {debugInfo}
+                            </div>
+                        )}
+                    </div>
                 </div>
 
                 {/* Filter & Search Bar */}
@@ -126,16 +153,16 @@ const AdminApplications = () => {
                                 <tr style={{ textAlign: 'left', borderBottom: '1px solid #F1F5F9' }}>
                                     <th style={{ padding: '1.25rem', fontSize: '0.7rem', fontWeight: '700', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Candidate</th>
                                     <th style={{ padding: '1.25rem', fontSize: '0.7rem', fontWeight: '700', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Position</th>
-                                    <th style={{ padding: '1.25rem', fontSize: '0.7rem', fontWeight: '700', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Date Applied</th>
+                                    <th style={{ padding: '1.25rem', fontSize: '0.7rem', fontWeight: '700', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Date Submitted</th>
                                     <th style={{ padding: '1.25rem', fontSize: '0.7rem', fontWeight: '700', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Status</th>
-                                    <th style={{ padding: '1.25rem', textAlign: 'right' }}></th>
+                                    <th style={{ padding: '1.25rem', textAlign: 'right' }}>Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {loading ? (
                                     <tr><td colSpan="5" style={{ textAlign: 'center', padding: '4rem', opacity: 0.5 }}>Syncing applications...</td></tr>
                                 ) : applications.length === 0 ? (
-                                    <tr><td colSpan="5" style={{ textAlign: 'center', padding: '4rem', opacity: 0.5 }}>No applications matching your search.</td></tr>
+                                    <tr><td colSpan="5" style={{ textAlign: 'center', padding: '4rem', opacity: 0.5 }}>No applications found.</td></tr>
                                 ) : (
                                     applications.map(app => (
                                         <tr key={app.id} style={{ borderBottom: '1px solid #F1F5F9', transition: 'background 0.2s' }}
@@ -147,10 +174,10 @@ const AdminApplications = () => {
                                                 <div style={{ fontSize: '0.8rem', color: '#64748b' }}>{app.email}</div>
                                             </td>
                                             <td style={{ padding: '1.25rem' }}>
-                                                <div style={{ fontWeight: '500', color: '#475569', fontSize: '0.9rem' }}>{app.jobs?.position_title || 'N/A'}</div>
+                                                <div style={{ fontWeight: '500', color: '#475569', fontSize: '0.9rem' }}>{app.jobs?.position_title || 'Application File'}</div>
                                             </td>
                                             <td style={{ padding: '1.25rem' }}>
-                                                <div style={{ fontSize: '0.875rem', color: '#64748b' }}>{formatDate(app.created_at)}</div>
+                                                <div style={{ fontSize: '0.875rem', color: '#64748b' }}>{formatDate(app.submitted_at, app.created_at)}</div>
                                             </td>
                                             <td style={{ padding: '1.25rem' }}>
                                                 <span className={`ats-pill ${app.status?.toLowerCase() || 'unread'}`}>
@@ -161,7 +188,7 @@ const AdminApplications = () => {
                                                 <Link
                                                     to={`/admin/applications/${app.id}`}
                                                     className="ats-btn ats-btn-ghost"
-                                                    style={{ fontSize: '0.75rem', fontWeight: '700' }}
+                                                    style={{ fontSize: '0.75rem', fontWeight: '800' }}
                                                 >
                                                     VIEW PROFILE
                                                 </Link>
