@@ -95,7 +95,7 @@ const AdminApplications = () => {
     };
 
     return (
-        <div className="admin-view-root">
+        <div className="admin-page-background">
             <div className="container">
 
                 {/* Header Section */}

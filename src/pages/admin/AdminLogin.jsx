@@ -30,7 +30,7 @@ const AdminLogin = () => {
   };
 
   return (
-    <div className="login-page">
+    <div className="login-page admin-page-background">
       <div className="login-container">
         <div className="login-box">
           <div className="login-logo-container">

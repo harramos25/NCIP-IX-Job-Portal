@@ -32,7 +32,7 @@ const AdminJobView = () => {
     if (!job) return <div className="text-center p-5">Job not found.</div>;
 
     return (
-        <div className="admin-view-root">
+        <div className="admin-page-background">
             <div className="container">
                 {/* Header Section */}
                 <header style={{ marginBottom: '2.5rem' }}>

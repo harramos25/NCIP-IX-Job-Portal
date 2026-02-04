@@ -19,6 +19,7 @@ const AdminJobEdit = () => {
         salary_grade: '',
         qualifications: '',
         deadline: '',
+        facebook_name: '',
         status: 'Open'
     });
 
@@ -67,59 +68,66 @@ const AdminJobEdit = () => {
     if (loading) return <div className="text-center p-5">Loading job details...</div>;
 
     return (
-        <div className="container dashboard-container">
-            <div className="page-header">
-                <div className="page-header-content">
-                    <h1>Edit Job</h1>
-                    <Link to="/admin/jobs" className="btn-link">← Back to Jobs</Link>
+        <div className="admin-page-background">
+            <div className="container dashboard-container">
+                <div className="page-header">
+                    <div className="page-header-content">
+                        <h1>Edit Job</h1>
+                        <Link to="/admin/jobs" className="btn-link">← Back to Jobs</Link>
+                    </div>
                 </div>
-            </div>
 
-            <div className="glass-card form-card">
-                <form onSubmit={handleSubmit}>
-                    <div className="form-group">
-                        <label>Position Title</label>
-                        <input type="text" name="position_title" required value={formData.position_title} onChange={handleChange} className="form-input" />
-                    </div>
-
-
-                    <div className="form-row">
+                <div className="glass-card form-card">
+                    <form onSubmit={handleSubmit}>
                         <div className="form-group">
-                            <label>Salary Grade</label>
-                            <input type="text" name="salary_grade" value={formData.salary_grade} onChange={handleChange} className="form-input" />
+                            <label>Position Title</label>
+                            <input type="text" name="position_title" required value={formData.position_title} onChange={handleChange} className="form-input" />
                         </div>
+
                         <div className="form-group">
-                            <label>Deadline</label>
-                            <input type="date" name="deadline" required value={formData.deadline} onChange={handleChange} className="form-input" />
+                            <label>Facebook Contact / Page (Optional)</label>
+                            <input type="text" name="facebook_name" value={formData.facebook_name || ''} onChange={handleChange} className="form-input" placeholder="e.g. NCIP Region IX" />
                         </div>
-                    </div>
-
-                    <div className="form-group">
-                        <label>Job Description</label>
-                        <textarea name="job_description" rows="5" required value={formData.job_description} onChange={handleChange} className="form-textarea"></textarea>
-                    </div>
-
-                    <div className="form-group">
-                        <label>Qualifications</label>
-                        <textarea name="qualifications" rows="4" required value={formData.qualifications} onChange={handleChange} className="form-textarea"></textarea>
-                    </div>
 
 
-                    <div className="form-group">
-                        <label>Status</label>
-                        <select name="status" value={formData.status} onChange={handleChange} className="form-select">
-                            <option value="Open">Open</option>
-                            <option value="Closed">Closed</option>
-                            <option value="Archived">Archived</option>
-                        </select>
-                    </div>
+                        <div className="form-row">
+                            <div className="form-group">
+                                <label>Salary Grade</label>
+                                <input type="text" name="salary_grade" value={formData.salary_grade} onChange={handleChange} className="form-input" />
+                            </div>
+                            <div className="form-group">
+                                <label>Deadline</label>
+                                <input type="date" name="deadline" required value={formData.deadline} onChange={handleChange} className="form-input" />
+                            </div>
+                        </div>
 
-                    <div className="form-actions">
-                        <button type="submit" className="btn btn-primary" disabled={saving}>
-                            {saving ? 'Saving...' : 'Update Job'}
-                        </button>
-                    </div>
-                </form>
+                        <div className="form-group">
+                            <label>Job Description</label>
+                            <textarea name="job_description" rows="5" required value={formData.job_description} onChange={handleChange} className="form-textarea"></textarea>
+                        </div>
+
+                        <div className="form-group">
+                            <label>Qualifications</label>
+                            <textarea name="qualifications" rows="4" required value={formData.qualifications} onChange={handleChange} className="form-textarea"></textarea>
+                        </div>
+
+
+                        <div className="form-group">
+                            <label>Status</label>
+                            <select name="status" value={formData.status} onChange={handleChange} className="form-select">
+                                <option value="Open">Open</option>
+                                <option value="Closed">Closed</option>
+                                <option value="Archived">Archived</option>
+                            </select>
+                        </div>
+
+                        <div className="form-actions">
+                            <button type="submit" className="btn btn-primary" disabled={saving}>
+                                {saving ? 'Saving...' : 'Update Job'}
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     );

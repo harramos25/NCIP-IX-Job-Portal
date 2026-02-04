@@ -151,121 +151,123 @@ const AdminProfile = () => {
     };
 
     return (
-        <div className="container dashboard-container">
-            <div className="page-header">
-                <div className="page-header-content">
-                    <h1>Admin Profile</h1>
-                    <p>Manage your account settings and security.</p>
-                </div>
-            </div>
-
-            <div className="profile-container">
-                {/* Right Column: Edit & Security Card (Now Left) */}
-                <div className="glass-card security-card">
-                    <h3>Account Details</h3>
-                    <form onSubmit={handleSaveProfile}>
-                        <div className="form-row">
-                            <div className="form-group">
-                                <label>Full Name</label>
-                                <input
-                                    type="text"
-                                    name="name"
-                                    value={profile.name}
-                                    onChange={handleProfileChange}
-                                />
-                            </div>
-                            <div className="form-group">
-                                <label>Username</label>
-                                <input
-                                    type="text"
-                                    name="username"
-                                    value={profile.username}
-                                    onChange={handleProfileChange}
-                                />
-                            </div>
-                        </div>
-                        <div className="form-group">
-                            <label>Email Address</label>
-                            <input
-                                type="email"
-                                value={profile.email}
-                                readOnly
-                                className="input-readonly"
-                                style={{ opacity: 0.7, cursor: 'not-allowed' }}
-                            />
-                            <small>Email cannot be changed for security reasons.</small>
-                        </div>
-                        <div className="text-right">
-                            <button type="submit" className="btn btn-primary">Update Details</button>
-                        </div>
-                    </form>
-
-                    <div className="divider"></div>
-
-                    <h3>Password Management</h3>
-                    <form onSubmit={handleUpdatePassword}>
-                        <div className="form-group">
-                            <label>Current Password</label>
-                            <input
-                                type="password"
-                                name="current"
-                                value={passwords.current}
-                                onChange={handlePasswordChange}
-                                required
-                            />
-                        </div>
-                        <div className="form-row">
-                            <div className="form-group">
-                                <label>New Password</label>
-                                <input
-                                    type="password"
-                                    name="new"
-                                    value={passwords.new}
-                                    onChange={handlePasswordChange}
-                                    required
-                                />
-                            </div>
-                            <div className="form-group">
-                                <label>Confirm New Password</label>
-                                <input
-                                    type="password"
-                                    name="confirm"
-                                    value={passwords.confirm}
-                                    onChange={handlePasswordChange}
-                                    required
-                                />
-                            </div>
-                        </div>
-                        <div className="text-right">
-                            <button type="submit" className="btn btn-secondary">Change Password</button>
-                        </div>
-                    </form>
-                </div>
-
-                {/* Left Column: Identity Card (Now Right) */}
-                <div className="glass-card identity-card">
-                    <div className="avatar-large-container">
-                        <img src={profile.avatar} alt="Profile" className="avatar-large" />
-                        <div
-                            className="camera-overlay"
-                            title="Change Photo"
-                            onClick={triggerFileInput}
-                        >
-                            📷
-                        </div>
-                        <input
-                            type="file"
-                            ref={fileInputRef}
-                            onChange={handleImageChange}
-                            style={{ display: 'none' }}
-                            accept="image/*"
-                        />
+        <div className="admin-page-background">
+            <div className="container dashboard-container">
+                <div className="page-header">
+                    <div className="page-header-content">
+                        <h1>Admin Profile</h1>
+                        <p>Manage your account settings and security.</p>
                     </div>
-                    <h2 className="admin-name-large">{profile.name}</h2>
-                    <p className="admin-role">{profile.role}</p>
-                    <div className="status-badge-large">
-                        <span className="status-dot"></span>
-                        Active Status
+                </div>
+
+                <div className="profile-container">
+                    {/* Right Column: Edit & Security Card (Now Left) */}
+                    <div className="glass-card security-card">
+                        <h3>Account Details</h3>
+                        <form onSubmit={handleSaveProfile}>
+                            <div className="form-row">
+                                <div className="form-group">
+                                    <label>Full Name</label>
+                                    <input
+                                        type="text"
+                                        name="name"
+                                        value={profile.name}
+                                        onChange={handleProfileChange}
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label>Username</label>
+                                    <input
+                                        type="text"
+                                        name="username"
+                                        value={profile.username}
+                                        onChange={handleProfileChange}
+                                    />
+                                </div>
+                            </div>
+                            <div className="form-group">
+                                <label>Email Address</label>
+                                <input
+                                    type="email"
+                                    value={profile.email}
+                                    readOnly
+                                    className="input-readonly"
+                                    style={{ opacity: 0.7, cursor: 'not-allowed' }}
+                                />
+                                <small>Email cannot be changed for security reasons.</small>
+                            </div>
+                            <div className="text-right">
+                                <button type="submit" className="btn btn-primary">Update Details</button>
+                            </div>
+                        </form>
+
+                        <div className="divider"></div>
+
+                        <h3>Password Management</h3>
+                        <form onSubmit={handleUpdatePassword}>
+                            <div className="form-group">
+                                <label>Current Password</label>
+                                <input
+                                    type="password"
+                                    name="current"
+                                    value={passwords.current}
+                                    onChange={handlePasswordChange}
+                                    required
+                                />
+                            </div>
+                            <div className="form-row">
+                                <div className="form-group">
+                                    <label>New Password</label>
+                                    <input
+                                        type="password"
+                                        name="new"
+                                        value={passwords.new}
+                                        onChange={handlePasswordChange}
+                                        required
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label>Confirm New Password</label>
+                                    <input
+                                        type="password"
+                                        name="confirm"
+                                        value={passwords.confirm}
+                                        onChange={handlePasswordChange}
+                                        required
+                                    />
+                                </div>
+                            </div>
+                            <div className="text-right">
+                                <button type="submit" className="btn btn-secondary">Change Password</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    {/* Left Column: Identity Card (Now Right) */}
+                    <div className="glass-card identity-card">
+                        <div className="avatar-large-container">
+                            <img src={profile.avatar} alt="Profile" className="avatar-large" />
+                            <div
+                                className="camera-overlay"
+                                title="Change Photo"
+                                onClick={triggerFileInput}
+                            >
+                                📷
+                            </div>
+                            <input
+                                type="file"
+                                ref={fileInputRef}
+                                onChange={handleImageChange}
+                                style={{ display: 'none' }}
+                                accept="image/*"
+                            />
+                        </div>
+                        <h2 className="admin-name-large">{profile.name}</h2>
+                        <p className="admin-role">{profile.role}</p>
+                        <div className="status-badge-large">
+                            <span className="status-dot"></span>
+                            Active Status
+                        </div>
                     </div>
                 </div>
             </div>

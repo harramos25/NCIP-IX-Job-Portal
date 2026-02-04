@@ -152,6 +152,20 @@ export default function JobDetails() {
                                 </span>
                             </div>
 
+                            {job.facebook_name && (
+                                <div className="premium-sidebar-item" style={{ alignItems: 'center', textAlign: 'center' }}>
+                                    <div className="premium-icon-circle" style={{ color: '#0866FF', marginBottom: '0.75rem' }}>
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                            <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
+                                        </svg>
+                                    </div>
+                                    <span className="ats-label-premium">FACEBOOK CONTACT</span>
+                                    <span className="ats-value-premium" style={{ color: '#0866FF', fontSize: '1.1rem' }}>
+                                        {job.facebook_name}
+                                    </span>
+                                </div>
+                            )}
+
                             <div style={{ marginTop: '2.5rem' }}>
                                 <Link
                                     to={`/job/${job.id}/apply`}

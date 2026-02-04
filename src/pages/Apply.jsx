@@ -38,6 +38,7 @@ export default function Apply() {
         const fullName = formData.get('full_name');
         const email = formData.get('email');
         const phone = formData.get('phone_number');
+        const facebookName = formData.get('facebook_name');
         const address = formData.get('address');
 
         try {
@@ -58,6 +59,7 @@ export default function Apply() {
                     full_name: fullName,
                     email: email,
                     phone_number: phone,
+                    facebook_name: facebookName,
                     address: address,
                     status: 'Unread'
                 }])
@@ -152,6 +154,10 @@ export default function Apply() {
                                 <label htmlFor="phone_number">Phone Number *</label>
                                 <input type="tel" id="phone_number" name="phone_number" required />
                             </div>
+                        </div>
+                        <div className="form-group">
+                            <label htmlFor="facebook_name">Facebook Name / Profile Link</label>
+                            <input type="text" id="facebook_name" name="facebook_name" placeholder="Also used for verification purpose" />
                         </div>
                         <div className="form-group">
                             <label htmlFor="address">Address *</label>

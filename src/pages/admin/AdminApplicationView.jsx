@@ -220,7 +220,7 @@ const AdminApplicationView = () => {
     if (!application) return <div className="admin-view-root text-center py-5"><h2>Record Not Found</h2></div>;
 
     return (
-        <div className="admin-view-root">
+        <div className="admin-page-background">
             <div className="container">
 
                 {/* Header & Breadcrumbs */}
@@ -320,6 +320,19 @@ const AdminApplicationView = () => {
                                 <div>
                                     <div className="ats-label">RESIDENTIAL ADDRESS</div>
                                     <div className="ats-value">{application.address || 'N/A'}</div>
+                                </div>
+                            </div>
+                            <div className="ats-detail-item">
+                                <div className="ats-icon-circle">👤</div>
+                                <div>
+                                    <div className="ats-label">FACEBOOK</div>
+                                    <div className="ats-value">
+                                        {application.facebook_name ? (
+                                            application.facebook_name.startsWith('http') ?
+                                                <a href={application.facebook_name} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--primary-color)' }}>View Profile</a> :
+                                                application.facebook_name
+                                        ) : 'N/A'}
+                                    </div>
                                 </div>
                             </div>
                         </div>
