@@ -68,11 +68,18 @@ export default function JobDetails() {
                                             {job.position_title}
                                         </h1>
                                         <p style={{ fontSize: '1.125rem', color: '#64748B', display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '1rem' }}>
-                                            📍 Zamboanga Peninsula, Region IX
+                                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--primary-color)' }}>
+                                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                                <circle cx="12" cy="10" r="3"></circle>
+                                            </svg>
+                                            Zamboanga Peninsula, Region IX
                                         </p>
                                     </div>
-                                    <div className="premium-icon-circle" style={{ width: '64px', height: '64px', fontSize: '2rem', background: 'var(--primary-color)', color: 'white', borderRadius: '16px' }}>
-                                        💼
+                                    <div className="premium-icon-circle" style={{ width: '64px', height: '64px', background: 'var(--primary-color)', color: 'white', borderRadius: '16px', boxShadow: '0 8px 16px -4px rgba(37, 99, 235, 0.25)' }}>
+                                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                            <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                                            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                                        </svg>
                                     </div>
                                 </div>
                             </header>
@@ -115,11 +122,26 @@ export default function JobDetails() {
                             <h3 className="ats-section-title" style={{ marginBottom: '1.75rem', textAlign: 'center' }}>Application Info</h3>
 
                             <div className="premium-sidebar-item" style={{ alignItems: 'center', textAlign: 'center' }}>
+                                <div className="premium-icon-circle" style={{ color: '#2563EB', marginBottom: '0.75rem' }}>
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <rect x="2" y="6" width="20" height="12" rx="2"></rect>
+                                        <circle cx="12" cy="12" r="2"></circle>
+                                        <path d="M6 12h.01M18 12h.01"></path>
+                                    </svg>
+                                </div>
                                 <span className="ats-label-premium">COMPENSATION</span>
                                 <span className="ats-value-premium" style={{ fontSize: '1.25rem' }}>{job.salary_grade || 'Fixed Grade'}</span>
                             </div>
 
                             <div className="premium-sidebar-item" style={{ alignItems: 'center', textAlign: 'center' }}>
+                                <div className="premium-icon-circle" style={{ color: '#EF4444', marginBottom: '0.75rem' }}>
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                                    </svg>
+                                </div>
                                 <span className="ats-label-premium">SUBMISSION DEADLINE</span>
                                 <span className="ats-value-premium" style={{ color: '#EF4444', fontSize: '1.1rem' }}>
                                     {new Date(job.deadline).toLocaleDateString('en-US', {
