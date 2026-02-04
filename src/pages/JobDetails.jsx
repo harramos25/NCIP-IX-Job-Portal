@@ -155,18 +155,18 @@ export default function JobDetails() {
                             <div style={{ marginTop: '2.5rem' }}>
                                 <Link
                                     to={`/job/${job.id}/apply`}
-                                    className="ats-btn ats-btn-primary"
+                                    className="btn btn-primary btn-large"
                                     style={{
                                         width: '100%',
                                         height: '56px',
-                                        fontSize: '1.1rem',
-                                        fontWeight: '800',
                                         display: 'flex',
                                         alignItems: 'center',
-                                        justifyContent: 'center'
+                                        justifyContent: 'center',
+                                        gap: '10px'
                                     }}
                                 >
-                                    Apply for this Role
+                                    <span className="btn-icon">🚀</span>
+                                    <span>Apply for this Role</span>
                                 </Link>
                                 <p style={{ fontSize: '0.8rem', color: '#94A3B8', marginTop: '1.25rem' }}>
                                     Quick apply process. Ensure documents are ready.

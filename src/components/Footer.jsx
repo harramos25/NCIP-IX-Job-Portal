@@ -7,9 +7,9 @@ export default function Footer() {
             <div className="footer-content">
                 <div className="footer-section">
                     <h3>Contact Information</h3>
-                    <p><strong>Hotline:</strong> (02) 8-373-97-77</p>
-                    <p><strong>Email:</strong> info@ncip.gov.ph</p>
-                    <p><strong>Address:</strong> 2F N. dela Merced Building, Quezon City</p>
+                    <p><strong>Hotline:</strong> (062) 215 4411</p>
+                    <p><strong>Email:</strong> region9@ncip.gov.ph</p>
+                    <p><strong>Address:</strong> Raiza Building, Rizal Street, Lumbia District Pagadian City, Zamboanga del Sur</p>
                 </div>
                 <div className="footer-section">
                     <h3>Quick Links</h3>
