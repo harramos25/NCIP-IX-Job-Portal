@@ -52,10 +52,6 @@ const AdminJobView = () => {
                         <h2 className="detail-value">{job.position_title}</h2>
                     </div>
 
-                    <div className="detail-section">
-                        <span className="detail-label">Department / Office</span>
-                        <p className="detail-value">{job.department || 'Not specified'}</p>
-                    </div>
 
                     <div className="detail-row">
                         <div className="detail-section">

@@ -15,7 +15,6 @@ const AdminJobEdit = () => {
     // Separate state for handling date string format
     const [formData, setFormData] = useState({
         position_title: '',
-        department: '',
         job_description: '',
         salary_grade: '',
         qualifications: '',
@@ -83,10 +82,6 @@ const AdminJobEdit = () => {
                         <input type="text" name="position_title" required value={formData.position_title} onChange={handleChange} className="form-input" />
                     </div>
 
-                    <div className="form-group">
-                        <label>Department / Office</label>
-                        <input type="text" name="department" required value={formData.department} onChange={handleChange} className="form-input" />
-                    </div>
 
                     <div className="form-row">
                         <div className="form-group">
