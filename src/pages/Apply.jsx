@@ -4,8 +4,9 @@ import { supabase } from '../lib/supabase';
 import { useToast } from '../context/ToastContext';
 
 const REQUIRED_DOCUMENTS = [
+    '2x2 ID Picture',
     'Application Letter',
-    'Personal Data Sheet',
+    'Personal Data Sheet/CS Formto 12 (Revise 2025)',
     'Performance Rating',
     'Certificate of Eligibility',
     'Transcript of Records',
@@ -61,9 +62,12 @@ export default function Apply() {
             const uploadPromises = [];
 
             for (const docType of REQUIRED_DOCUMENTS) {
-                const fileInput = formData.get(docType.replace(/\s+/g, '_').toLowerCase());
+                const inputName = docType.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase();
+                const fileInput = formData.get(inputName);
                 if (fileInput && fileInput.size > 0) {
-                    const fileName = `${applicationId}/${Date.now()}_${docType.replace(/\s+/g, '')}.pdf`;
+                    const isImage = docType === '2x2 ID Picture';
+                    const extension = isImage ? (fileInput.name.split('.').pop() || 'png') : 'pdf';
+                    const fileName = `${applicationId}/${Date.now()}_${docType.replace(/[^a-zA-Z0-9]/g, '')}.${extension}`;
 
                     const promise = (async () => {
                         // Upload
@@ -148,17 +152,17 @@ export default function Apply() {
 
                     <div className="form-section">
                         <h2>Required Documents</h2>
-                        <p className="form-note">Please upload all required documents in PDF format (Maximum 15MB per file)</p>
+                        <p className="form-note">Please upload all required documents (Max 15MB per file)</p>
                         {REQUIRED_DOCUMENTS.map((doc, i) => (
                             <div className="form-group" key={i}>
                                 <label>{doc} *</label>
                                 <input
                                     type="file"
-                                    name={doc.replace(/\s+/g, '_').toLowerCase()}
-                                    accept=".pdf"
+                                    name={doc.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase()}
+                                    accept={doc === '2x2 ID Picture' ? "image/*" : ".pdf"}
                                     required
                                 />
-                                <small>PDF only</small>
+                                <small>{doc === '2x2 ID Picture' ? "Image files only (JPG, PNG)" : "PDF files only"}</small>
                             </div>
                         ))}
                     </div>

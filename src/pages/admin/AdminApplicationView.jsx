@@ -14,6 +14,7 @@ const AdminApplicationView = () => {
     const [statusUpdating, setStatusUpdating] = useState(false);
     const [activeTab, setActiveTab] = useState('documents');
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [idPicture, setIdPicture] = useState(null);
 
     useEffect(() => {
         fetchApplicationDetails();
@@ -41,6 +42,13 @@ const AdminApplicationView = () => {
 
             if (docsError) throw docsError;
             setDocuments(docs || []);
+
+            // Identify 2x2 Image
+            const pic = docs?.find(d => d.document_type === '2x2 ID Picture');
+            if (pic) {
+                const { data: { publicUrl } } = supabase.storage.from('documents').getPublicUrl(pic.file_path);
+                setIdPicture(publicUrl);
+            }
 
             // Auto-mark as Viewed if Unread
             if (app.status === 'Unread') {
@@ -192,11 +200,23 @@ const AdminApplicationView = () => {
                     {/* Left Column (Profile) */}
                     <aside className="ats-card">
                         <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
-                            <div style={{
-                                width: '80px', height: '80px', borderRadius: '50%', background: '#F1F5F9',
-                                margin: '0 auto 1rem', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                fontSize: '2rem'
-                            }}>👤</div>
+                            {idPicture ? (
+                                <img
+                                    src={idPicture}
+                                    alt="2x2"
+                                    style={{
+                                        width: '80px', height: '80px', borderRadius: '50%',
+                                        objectFit: 'cover', border: '2px solid #F1F5F9',
+                                        margin: '0 auto 1rem'
+                                    }}
+                                />
+                            ) : (
+                                <div style={{
+                                    width: '80px', height: '80px', borderRadius: '50%', background: '#F1F5F9',
+                                    margin: '0 auto 1rem', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                    fontSize: '2rem'
+                                }}>👤</div>
+                            )}
                             <div className="ats-highlight-box">
                                 <div className="ats-label">APPLIED POSITION</div>
                                 <div className="ats-value" style={{ color: 'var(--primary-color)', fontSize: '1.1rem' }}>
@@ -256,7 +276,9 @@ const AdminApplicationView = () => {
                                                 <span style={{ fontSize: '1.5rem' }}>📄</span>
                                                 <div>
                                                     <div style={{ fontWeight: '600', fontSize: '0.9rem' }}>{doc.document_type}</div>
-                                                    <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>PDF • {formatSize(doc.file_size)}</div>
+                                                    <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
+                                                        {doc.file_name?.toLowerCase().endsWith('.pdf') ? 'PDF' : 'Image'} • {formatSize(doc.file_size)}
+                                                    </div>
                                                 </div>
                                             </div>
                                             <a
