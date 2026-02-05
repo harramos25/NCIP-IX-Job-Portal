@@ -52,11 +52,12 @@ ALTER TABLE application_documents ENABLE ROW LEVEL SECURITY;
 ALTER TABLE admin_profiles ENABLE ROW LEVEL SECURITY;
 
 -- 6. Create Policies
--- Allow anyone to view jobs
+
+-- Jobs Policies
 DROP POLICY IF EXISTS "Public jobs are viewable by everyone" ON jobs;
 CREATE POLICY "Public jobs are viewable by everyone" ON jobs FOR SELECT USING (true);
 
--- Allow anyone to submit/view/update applications
+-- Applications Policies
 DROP POLICY IF EXISTS "Anyone can submit applications" ON applications;
 CREATE POLICY "Anyone can submit applications" ON applications FOR INSERT WITH CHECK (true);
 
@@ -66,15 +67,14 @@ CREATE POLICY "Public select applications" ON applications FOR SELECT USING (tru
 DROP POLICY IF EXISTS "Public update applications" ON applications;
 CREATE POLICY "Public update applications" ON applications FOR UPDATE USING (true);
 
--- Allow anyone to lookup username mapping (for login)
+-- Admin Profiles Policies
 DROP POLICY IF EXISTS "Public username lookup" ON admin_profiles;
 CREATE POLICY "Public username lookup" ON admin_profiles FOR SELECT USING (true);
 
--- Allow individual users to update their own profile
 DROP POLICY IF EXISTS "Users can update own profile" ON admin_profiles;
 CREATE POLICY "Users can update own profile" ON admin_profiles FOR ALL USING (auth.uid() = id);
 
--- 7. Allow anyone to upload/view documents
+-- Application Documents Policies
 DROP POLICY IF EXISTS "Anyone can submit documents" ON application_documents;
 CREATE POLICY "Anyone can submit documents" ON application_documents FOR INSERT WITH CHECK (true);
 
