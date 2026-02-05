@@ -20,6 +20,7 @@ import AdminApplications from './pages/admin/AdminApplications';
 import AdminApplicationView from './pages/admin/AdminApplicationView';
 import AdminProfile from './pages/admin/AdminProfile';
 import AdminSettings from './pages/admin/AdminSettings';
+import AdminResetPassword from './pages/admin/AdminResetPassword';
 
 function App() {
   return (
@@ -45,9 +46,10 @@ function App() {
 
         {/* Admin Routes - Uses Admin Header (except login) */}
 
-        {/* Admin Login - No Header/Footer */}
+        {/* Admin Login & Reset - No Header/Footer */}
         <Route path="/admin" element={<AdminLogin />} />
         <Route path="/admin/login" element={<AdminLogin />} />
+        <Route path="/admin/reset-password" element={<AdminResetPassword />} />
 
         {/* Admin Dashboard & Protected Pages */}
         <Route path="/admin/*" element={

@@ -20,6 +20,10 @@ const AdminProfile = () => {
         new: '',
         confirm: ''
     });
+    const [otp, setOtp] = useState('');
+    const [showOtpInput, setShowOtpInput] = useState(false);
+    const [pendingEmail, setPendingEmail] = useState('');
+    const [originalEmail, setOriginalEmail] = useState('');
 
     // Sync state from Database
     useEffect(() => {
@@ -30,7 +34,17 @@ const AdminProfile = () => {
                 localStorage.setItem('adminAvatarUrl', dbAvatar); // Keep local sync for speed
             }
         };
+
+        const fetchUser = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                setProfile(prev => ({ ...prev, email: user.email }));
+                setOriginalEmail(user.email);
+            }
+        };
+
         fetchAvatar();
+        fetchUser();
 
         // Also listen for local updates
         const handleLocalUpdate = () => {
@@ -134,20 +148,89 @@ const AdminProfile = () => {
         setPasswords({ ...passwords, [e.target.name]: e.target.value });
     };
 
-    const handleSaveProfile = (e) => {
+    const handleSaveProfile = async (e) => {
         e.preventDefault();
-        showToast('Profile updated successfully! (Mock)', 'success');
-        // In real app, update Supabase auth/profile here
+        try {
+            setUploading(true);
+            const updates = {
+                data: {
+                    full_name: profile.name,
+                    username: profile.username
+                }
+            };
+
+            // Check if email changed
+            const emailChanged = profile.email !== originalEmail;
+            if (emailChanged) {
+                updates.email = profile.email;
+                setPendingEmail(profile.email);
+            }
+
+            const { error } = await supabase.auth.updateUser(updates);
+
+            if (error) throw error;
+
+            if (emailChanged) {
+                setShowOtpInput(true);
+                showToast('Verification code sent to your new email!', 'success');
+            } else {
+                showToast('Profile updated successfully!', 'success');
+            }
+        } catch (error) {
+            console.error('Profile update error:', error);
+            showToast('Error updating profile: ' + error.message, 'error');
+        } finally {
+            setUploading(false);
+        }
     };
 
-    const handleUpdatePassword = (e) => {
+    const handleVerifyEmailOTP = async (e) => {
+        e.preventDefault();
+        try {
+            setUploading(true);
+            const { error } = await supabase.auth.verifyOtp({
+                email: pendingEmail,
+                token: otp,
+                type: 'email_change'
+            });
+
+            if (error) throw error;
+
+            showToast('Email updated successfully!', 'success');
+            setOriginalEmail(pendingEmail);
+            setShowOtpInput(false);
+            setOtp('');
+        } catch (error) {
+            console.error('OTP Verification error:', error);
+            showToast('Invalid or expired code.', 'error');
+        } finally {
+            setUploading(false);
+        }
+    };
+
+    const handleUpdatePassword = async (e) => {
         e.preventDefault();
         if (passwords.new !== passwords.confirm) {
             showToast('New passwords do not match!', 'error');
             return;
         }
-        showToast('Password updated successfully! (Mock)', 'success');
-        setPasswords({ current: '', new: '', confirm: '' });
+
+        try {
+            setUploading(true);
+            const { error } = await supabase.auth.updateUser({
+                password: passwords.new
+            });
+
+            if (error) throw error;
+
+            showToast('Password updated successfully!', 'success');
+            setPasswords({ current: '', new: '', confirm: '' });
+        } catch (error) {
+            console.error('Password update error:', error);
+            showToast('Error updating password: ' + error.message, 'error');
+        } finally {
+            setUploading(false);
+        }
     };
 
     return (
@@ -189,16 +272,56 @@ const AdminProfile = () => {
                                 <label>Email Address</label>
                                 <input
                                     type="email"
+                                    name="email"
                                     value={profile.email}
-                                    readOnly
-                                    className="input-readonly"
-                                    style={{ opacity: 0.7, cursor: 'not-allowed' }}
+                                    onChange={handleProfileChange}
+                                    disabled={showOtpInput}
                                 />
-                                <small>Email cannot be changed for security reasons.</small>
+                                <small>Changing email requires verification.</small>
                             </div>
-                            <div className="text-right">
-                                <button type="submit" className="btn btn-primary">Update Details</button>
-                            </div>
+
+                            {showOtpInput && (
+                                <div className="glass-card" style={{ marginTop: '1rem', border: '1px solid var(--primary-color)', padding: '1rem' }}>
+                                    <div className="form-group">
+                                        <label>Enter Verification Code (OTP)</label>
+                                        <input
+                                            type="text"
+                                            value={otp}
+                                            onChange={(e) => setOtp(e.target.value)}
+                                            placeholder="123456"
+                                            style={{ textAlign: 'center', letterSpacing: '4px', fontSize: '1.2rem' }}
+                                            required
+                                        />
+                                        <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.75rem' }}>
+                                            <button
+                                                type="button"
+                                                onClick={handleVerifyEmailOTP}
+                                                className="btn btn-primary"
+                                                style={{ flex: 1 }}
+                                                disabled={uploading}
+                                            >
+                                                Verify Code
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => setShowOtpInput(false)}
+                                                className="btn btn-ghost"
+                                                style={{ padding: '0 1rem' }}
+                                            >
+                                                Cancel
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {!showOtpInput && (
+                                <div className="text-right">
+                                    <button type="submit" className="btn btn-primary" disabled={uploading}>
+                                        {uploading ? 'Updating...' : 'Update Details'}
+                                    </button>
+                                </div>
+                            )}
                         </form>
 
                         <div className="divider"></div>

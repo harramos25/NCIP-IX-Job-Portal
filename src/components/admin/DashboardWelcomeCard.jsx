@@ -1,7 +1,5 @@
 import React from 'react';
 
-// Using inline SVGs to match Lucide/Heroicons style since we cannot install new packages automatically.
-// These are styled to match the requested design: Blue stroke, clean outline.
 
 const CalendarIcon = () => (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: '#2563EB' }}>
