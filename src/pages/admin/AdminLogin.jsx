@@ -88,7 +88,6 @@ const AdminLogin = () => {
                     name="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="admin@ncip.gov.ph"
                     required
                     autoFocus
                   />
@@ -96,17 +95,7 @@ const AdminLogin = () => {
               </div>
 
               <div className="form-group">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <label htmlFor="password">Password</label>
-                  <button
-                    type="button"
-                    className="forgot-link"
-                    onClick={() => setIsForgotMode(true)}
-                    style={{ background: 'none', border: 'none', color: 'var(--primary-color)', fontSize: '0.85rem', cursor: 'pointer', padding: 0 }}
-                  >
-                    Forgot Password?
-                  </button>
-                </div>
+                <label htmlFor="password">Password</label>
                 <div className="input-with-icon">
                   <span className="input-icon">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -141,6 +130,16 @@ const AdminLogin = () => {
                     )}
                   </button>
                 </div>
+                <div style={{ textAlign: 'right', marginTop: '0.5rem' }}>
+                  <button
+                    type="button"
+                    className="forgot-link"
+                    onClick={() => setIsForgotMode(true)}
+                    style={{ background: 'none', border: 'none', color: 'var(--primary-color)', fontSize: '0.85rem', cursor: 'pointer', padding: 0 }}
+                  >
+                    Forgot Password?
+                  </button>
+                </div>
               </div>
 
               <button type="submit" className="btn btn-primary btn-block" disabled={isLoading}>
@@ -166,7 +165,6 @@ const AdminLogin = () => {
                     id="reset-email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="admin@ncip.gov.ph"
                     required
                     autoFocus
                   />

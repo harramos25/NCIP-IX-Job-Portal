@@ -521,13 +521,14 @@ body::before {
 }
 
 .login-box .form-group input[type="text"],
+.login-box .form-group input[type="email"],
 .login-box .form-group input[type="password"] {
     background: rgba(255, 255, 255, 0.5);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     border: 1px solid rgba(255, 255, 255, 0.5);
     color: var(--primary-dark);
-    padding: 0.875rem 1rem 0.875rem 2.75rem;
+    padding: 0.875rem 1rem 0.875rem 3.25rem;
     border-radius: 0.75rem;
     font-size: 0.95rem;
     width: 100%;
@@ -559,7 +560,7 @@ body::before {
 
 .input-icon {
     position: absolute;
-    left: 1rem;
+    left: 1.25rem;
     font-size: 1.1rem;
     color: var(--primary-dark);
     z-index: 2;
@@ -4069,6 +4070,7 @@ input:checked+.slider:before {
         max-width: 500px;
     }
 }
+
 /* ===== ADMIN PAGE BACKGROUND ===== */
 .admin-page-background {
     background: linear-gradient(135deg, #E0E7FF 0%, #F3F4F6 100%);
