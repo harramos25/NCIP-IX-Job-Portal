@@ -23,8 +23,24 @@ const AdminLogin = () => {
     setIsLoading(true);
 
     try {
+      let loginEmail = email;
+
+      // Check if the input is an email. If not, treat as username and lookup email.
+      if (!email.includes('@')) {
+        const { data, error: lookupError } = await supabase
+          .from('admin_profiles')
+          .select('email')
+          .eq('username', email)
+          .single();
+
+        if (lookupError || !data) {
+          throw new Error('Username not found. Please use your email or check your username.');
+        }
+        loginEmail = data.email;
+      }
+
       const { data, error } = await supabase.auth.signInWithPassword({
-        email,
+        email: loginEmail,
         password,
       });
 

@@ -37,12 +37,21 @@ CREATE TABLE IF NOT EXISTS application_documents (
   uploaded_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 4. Enable Row Level Security (RLS)
+-- 4. Admin Profiles (for username mapping)
+CREATE TABLE IF NOT EXISTS admin_profiles (
+  id UUID REFERENCES auth.users(id) ON DELETE CASCADE PRIMARY KEY,
+  username TEXT UNIQUE NOT NULL,
+  email TEXT NOT NULL,
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 5. Enable Row Level Security (RLS)
 ALTER TABLE jobs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE applications ENABLE ROW LEVEL SECURITY;
 ALTER TABLE application_documents ENABLE ROW LEVEL SECURITY;
+ALTER TABLE admin_profiles ENABLE ROW LEVEL SECURITY;
 
--- 5. Create Policies
+-- 6. Create Policies
 -- Allow anyone to view jobs
 DROP POLICY IF EXISTS "Public jobs are viewable by everyone" ON jobs;
 CREATE POLICY "Public jobs are viewable by everyone" ON jobs FOR SELECT USING (true);
@@ -57,7 +66,15 @@ CREATE POLICY "Public select applications" ON applications FOR SELECT USING (tru
 DROP POLICY IF EXISTS "Public update applications" ON applications;
 CREATE POLICY "Public update applications" ON applications FOR UPDATE USING (true);
 
--- Allow anyone to upload/view documents
+-- Allow anyone to lookup username mapping (for login)
+DROP POLICY IF EXISTS "Public username lookup" ON admin_profiles;
+CREATE POLICY "Public username lookup" ON admin_profiles FOR SELECT USING (true);
+
+-- Allow individual users to update their own profile
+DROP POLICY IF EXISTS "Users can update own profile" ON admin_profiles;
+CREATE POLICY "Users can update own profile" ON admin_profiles FOR ALL USING (auth.uid() = id);
+
+-- 7. Allow anyone to upload/view documents
 DROP POLICY IF EXISTS "Anyone can submit documents" ON application_documents;
 CREATE POLICY "Anyone can submit documents" ON application_documents FOR INSERT WITH CHECK (true);
 

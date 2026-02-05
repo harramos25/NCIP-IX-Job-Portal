@@ -166,9 +166,24 @@ const AdminProfile = () => {
                 setPendingEmail(profile.email);
             }
 
-            const { error } = await supabase.auth.updateUser(updates);
+            const { error: authError } = await supabase.auth.updateUser(updates);
 
-            if (error) throw error;
+            if (authError) throw authError;
+
+            // Sync with admin_profiles table
+            const { error: profileError } = await supabase
+                .from('admin_profiles')
+                .upsert({
+                    id: (await supabase.auth.getUser()).data.user.id,
+                    username: profile.username,
+                    email: profile.email,
+                    updated_at: new Date().toISOString()
+                });
+
+            if (profileError) {
+                console.error('Error syncing admin profile:', profileError);
+                // We don't throw here to avoid confusing the user if the main auth update succeeded
+            }
 
             if (emailChanged) {
                 setShowOtpInput(true);
