@@ -99,7 +99,7 @@ const AdminLogin = () => {
                     </svg>
                   </span>
                   <input
-                    type="email"
+                    type="text"
                     id="email"
                     name="email"
                     value={email}
