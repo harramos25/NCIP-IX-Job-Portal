@@ -134,6 +134,19 @@ body::before {
     display: flex;
     gap: 1.5rem;
     position: relative;
+    align-items: center;
+}
+
+.nav-mobile-header {
+    display: none;
+}
+
+.nav-backdrop {
+    display: none;
+}
+
+.nav-links-container {
+    display: contents;
 }
 
 .public-header nav a {
@@ -316,7 +329,7 @@ body::before {
     }
 
     .nav-mobile-header {
-        display: flex;
+        display: flex !important;
         justify-content: space-between;
         align-items: center;
         padding: 1.5rem;
@@ -355,7 +368,7 @@ body::before {
     }
 
     .nav-links-container {
-        display: flex;
+        display: flex !important;
         flex-direction: column;
         align-items: center;
         gap: 1.5rem;
@@ -383,6 +396,7 @@ body::before {
 
     /* Add backdrop styling */
     .nav-backdrop {
+        display: block !important;
         position: fixed;
         top: 0;
         left: 0;
