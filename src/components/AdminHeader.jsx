@@ -176,10 +176,6 @@ const AdminHeader = () => {
                                 zIndex: 50,
                                 border: '1px solid rgba(0,0,0,0.05)'
                             }}>
-                                <Link to="/admin/dashboard" className="dropdown-item" onClick={() => setIsDropdownOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem 1rem', textDecoration: 'none', color: '#4b5563', transition: 'background 0.2s' }}>
-                                    <span className="icon">🏠</span>
-                                    <span>DASHBOARD</span>
-                                </Link>
                                 <Link to="/admin/settings" className="dropdown-item" onClick={() => setIsDropdownOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem 1rem', textDecoration: 'none', color: '#4b5563', transition: 'background 0.2s' }}>
                                     <span className="icon">⚙️</span>
                                     <span>SETTINGS</span>
