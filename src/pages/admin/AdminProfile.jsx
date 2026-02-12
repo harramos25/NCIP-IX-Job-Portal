@@ -9,7 +9,7 @@ const AdminProfile = () => {
     const [loading, setLoading] = useState(true);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [profile, setProfile] = useState({
-        name: 'NCIP Admin',
+        name: localStorage.getItem('adminName') || 'NCIP Admin',
         role: 'Super Administrator',
         email: 'admin@ncip.gov.ph',
         username: 'admin',
@@ -201,6 +201,9 @@ const AdminProfile = () => {
                 setShowOtpInput(true);
                 showToast('Verification code sent to your new email!', 'success');
             } else {
+                // Sync with Header
+                localStorage.setItem('adminName', profile.name);
+                window.dispatchEvent(new Event('admin-profile-updated'));
                 showToast('Profile updated successfully!', 'success');
             }
         } catch (error) {
@@ -288,7 +291,7 @@ const AdminProfile = () => {
                         <form onSubmit={handleSaveProfile}>
                             <div className="form-row">
                                 <div className="form-group">
-                                    <label>Full Name</label>
+                                    <label>Display Name (Nickname)</label>
                                     <input
                                         type="text"
                                         name="name"

@@ -14,6 +14,10 @@ const AdminHeader = () => {
         "https://api.dicebear.com/7.x/avataaars/svg?seed=NCIPAdmin"
     );
 
+    const [adminName, setAdminName] = useState(
+        localStorage.getItem('adminName') || "NCIP Admin"
+    );
+
     const fallbackAvatar = "https://api.dicebear.com/7.x/avataaars/svg?seed=NCIPAdmin";
 
     // 2. Listen for Updates & Initial Fetch
@@ -28,16 +32,29 @@ const AdminHeader = () => {
         };
         fetchAvatar();
 
-        // Listen for local updates (e.g., immediate upload feedback)
-        const handleAvatarUpdate = () => {
-            const newAvatar = localStorage.getItem('adminAvatarUrl');
-            if (newAvatar) {
-                setAvatarSrc(newAvatar);
+        const fetchUser = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user?.user_metadata?.full_name) {
+                setAdminName(user.user_metadata.full_name);
+                localStorage.setItem('adminName', user.user_metadata.full_name);
             }
         };
+        fetchUser();
 
-        window.addEventListener('admin-avatar-updated', handleAvatarUpdate);
-        return () => window.removeEventListener('admin-avatar-updated', handleAvatarUpdate);
+        // Listen for local updates (e.g., immediate upload feedback)
+        const handleProfileUpdate = () => {
+            const newAvatar = localStorage.getItem('adminAvatarUrl');
+            const newName = localStorage.getItem('adminName');
+            if (newAvatar) setAvatarSrc(newAvatar);
+            if (newName) setAdminName(newName);
+        };
+
+        window.addEventListener('admin-avatar-updated', handleProfileUpdate);
+        window.addEventListener('admin-profile-updated', handleProfileUpdate);
+        return () => {
+            window.removeEventListener('admin-avatar-updated', handleProfileUpdate);
+            window.removeEventListener('admin-profile-updated', handleProfileUpdate);
+        };
     }, []);
 
     // Click Outside Logic
@@ -140,7 +157,7 @@ const AdminHeader = () => {
                                 onError={(e) => { e.target.src = fallbackAvatar; }}
                             />
 
-                            <span className="admin-name" style={{ fontWeight: '600', color: 'var(--text-primary)' }}>NCIP Admin</span>
+                            <span className="admin-name" style={{ fontWeight: '600', color: 'var(--text-primary)' }}>{adminName}</span>
                             <span className="dropdown-arrow" style={{ fontSize: '0.8rem' }}>▼</span>
                         </button>
 
