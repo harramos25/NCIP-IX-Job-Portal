@@ -6,7 +6,7 @@ import { useToast } from '../../context/ToastContext';
 const AdminProfile = () => {
     const { showToast } = useToast();
     const fileInputRef = useRef(null);
-    const [uploading, setUploading] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [profile, setProfile] = useState({
         name: 'NCIP Admin',
         role: 'Super Administrator',
@@ -36,10 +36,21 @@ const AdminProfile = () => {
         };
 
         const fetchUser = async () => {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (user) {
-                setProfile(prev => ({ ...prev, email: user.email }));
-                setOriginalEmail(user.email);
+            try {
+                const { data: { user } } = await supabase.auth.getUser();
+                if (user) {
+                    setProfile(prev => ({
+                        ...prev,
+                        email: user.email,
+                        name: user.user_metadata?.full_name || prev.name,
+                        username: user.user_metadata?.username || prev.username
+                    }));
+                    setOriginalEmail(user.email);
+                }
+            } catch (err) {
+                console.error('Error fetching user:', err);
+            } finally {
+                setLoading(false);
             }
         };
 
@@ -247,6 +258,17 @@ const AdminProfile = () => {
             setUploading(false);
         }
     };
+
+    if (loading) {
+        return (
+            <div className="admin-page-background" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+                <div className="glass-card" style={{ padding: '2rem', textAlign: 'center' }}>
+                    <div className="loading-spinner"></div>
+                    <p style={{ marginTop: '1rem', color: 'white' }}>Loading profile settings...</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="admin-page-background">
