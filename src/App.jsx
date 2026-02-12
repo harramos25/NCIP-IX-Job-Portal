@@ -1,3 +1,26 @@
+import React from 'react';
+import { Routes, Route, Outlet } from 'react-router-dom';
+import { ToastProvider } from './context/ToastContext';
+import ScrollToTop from './components/common/ScrollToTop';
+import Header from './components/Header';
+import Footer from './components/Footer';
+import Home from './pages/Home';
+import About from './pages/About';
+import RegionalOffices from './pages/RegionalOffices';
+import JobDetails from './pages/JobDetails';
+import Apply from './pages/Apply';
+import AdminLogin from './pages/admin/AdminLogin';
+import AdminDashboard from './pages/admin/AdminDashboard';
+import AdminHeader from './components/AdminHeader';
+import AdminJobs from './pages/admin/AdminJobs';
+import AdminJobCreate from './pages/admin/AdminJobCreate';
+import AdminJobEdit from './pages/admin/AdminJobEdit';
+import AdminJobView from './pages/admin/AdminJobView';
+import AdminApplications from './pages/admin/AdminApplications';
+import AdminApplicationView from './pages/admin/AdminApplicationView';
+import AdminProfile from './pages/admin/AdminProfile';
+import AdminSettings from './pages/admin/AdminSettings';
+import AdminResetPassword from './pages/admin/AdminResetPassword';
 import ProtectedRoute from './components/common/ProtectedRoute';
 
 function App() {
