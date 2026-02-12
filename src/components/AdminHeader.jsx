@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import logo from '../assets/images/ncip-logo.png';
 import { settingsService } from '../services/settingsService';
+import { supabase } from '../lib/supabase';
 
 const AdminHeader = () => {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
