@@ -264,18 +264,23 @@ body::before {
     }
 
     .public-header .header-content {
-        padding: 0 1.25rem;
+        padding: 0 1rem;
         flex-wrap: nowrap;
         justify-content: space-between;
         align-items: center;
+        gap: 0.5rem;
+    }
+
+    .logo-container {
+        gap: 0.5rem;
     }
 
     .header-logo {
-        height: 40px;
+        height: 32px;
     }
 
     .public-header h1 {
-        font-size: 14px;
+        font-size: clamp(12px, 3.5vw, 16px);
     }
 
     .public-header nav {

@@ -120,7 +120,7 @@ body::before {
 
 .public-header h1 {
     font-family: 'Poppins', sans-serif;
-    font-size: 22px;
+    font-size: clamp(16px, 4vw, 22px);
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: -0.01em;
@@ -269,18 +269,23 @@ body::before {
     }
 
     .public-header .header-content {
-        padding: 0 1.25rem;
+        padding: 0 1rem;
         flex-wrap: nowrap;
         justify-content: space-between;
         align-items: center;
+        gap: 0.5rem;
+    }
+
+    .logo-container {
+        gap: 0.5rem;
     }
 
     .header-logo {
-        height: 40px;
+        height: 32px;
     }
 
     .public-header h1 {
-        font-size: 14px;
+        font-size: clamp(12px, 3.5vw, 16px);
     }
 
     .public-header nav {
