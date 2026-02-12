@@ -33,8 +33,17 @@ const AdminLogin = () => {
           .eq('username', email)
           .single();
 
-        if (lookupError || !data) {
-          throw new Error('Username not found. Please use your email or check your username.');
+        if (lookupError) {
+          if (lookupError.code === 'PGRST116') {
+            throw new Error('Username not found. Try logging in with your registration email first.');
+          } else if (lookupError.message.includes('relation "admin_profiles" does not exist')) {
+            throw new Error('Database setup incomplete. Please run the provided SQL script in Supabase.');
+          }
+          throw lookupError;
+        }
+
+        if (!data) {
+          throw new Error('Username not found. Please use your email.');
         }
         loginEmail = data.email;
       }

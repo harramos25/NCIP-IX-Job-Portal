@@ -236,19 +236,74 @@ body::before {
 /* ===== MOBILE NAV TOGGLE ===== */
 .menu-toggle {
     display: none;
-    background: none;
-    border: none;
-    padding: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 8px;
     cursor: pointer;
     align-items: center;
     justify-content: center;
+    border-radius: 8px;
+    color: white;
+    transition: all 0.2s ease;
+    z-index: 1001;
+}
+
+.menu-toggle:hover {
+    background: rgba(255, 255, 255, 0.2);
 }
 
 .menu-toggle svg {
     width: 24px;
     height: 24px;
-    stroke: var(--primary-color);
+    stroke: currentColor;
     fill: none;
+}
+
+/* Responsive Public Header */
+@media (max-width: 768px) {
+    .menu-toggle {
+        display: flex;
+    }
+
+    .public-header .header-content {
+        padding: 0 1.5rem;
+    }
+
+    .public-header h1 {
+        font-size: 20px;
+    }
+
+    .public-header nav {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 80%;
+        max-width: 300px;
+        height: 100vh;
+        background: rgba(8, 31, 92, 0.85);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 2rem;
+        transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 1000;
+        box-shadow: -10px 0 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .public-header nav.nav-open {
+        right: 0;
+    }
+
+    .public-header nav a {
+        font-size: 1.25rem;
+        letter-spacing: 0.1em;
+    }
+
+    .public-header nav a::after {
+        bottom: -8px;
+    }
 }
 
 /* ===== DROPDOWN ITEMS ===== */

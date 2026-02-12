@@ -28,16 +28,15 @@ export default function Header() {
                     onClick={() => setIsNavOpen(!isNavOpen)}
                 >
                     <svg viewBox="0 0 24 24" aria-hidden="true">
-                        <polygon
-                            points="7,2 17,2 22,7 22,17 17,22 7,22 2,17 2,7"
-                            fill="#F7F2EB"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinejoin="round"
-                        ></polygon>
-                        <line className="menu-line" x1="7" y1="9" x2="17" y2="9"></line>
-                        <line className="menu-line" x1="7" y1="12" x2="17" y2="12"></line>
-                        <line className="menu-line" x1="7" y1="15" x2="17" y2="15"></line>
+                        {isNavOpen ? (
+                            <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                        ) : (
+                            <>
+                                <line x1="4" y1="6" x2="20" y2="6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                                <line x1="4" y1="12" x2="20" y2="12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                                <line x1="4" y1="18" x2="20" y2="18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                            </>
+                        )}
                     </svg>
                 </button>
                 <nav className={isNavOpen ? 'nav-open' : ''}>

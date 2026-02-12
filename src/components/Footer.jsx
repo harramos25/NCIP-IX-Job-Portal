@@ -14,7 +14,7 @@ export default function Footer() {
                 <div className="footer-section">
                     <h3>Quick Links</h3>
                     <ul className="footer-links">
-                        <li><a href="https://www.ncip.gov.ph" target="_blank" rel="noopener noreferrer">About NCIP</a></li>
+                        <li><Link to="/about">About NCIP</Link></li>
                         <li><Link to="/">Job Vacancies</Link></li>
                     </ul>
                 </div>
