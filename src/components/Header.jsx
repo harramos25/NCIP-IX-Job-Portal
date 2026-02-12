@@ -23,28 +23,43 @@ export default function Header() {
                     </Link>
                     <h1>NCIP IX JOB PORTAL</h1>
                 </div>
+
                 <button
                     className="menu-toggle"
-                    aria-label="Toggle navigation"
+                    aria-label="Open navigation"
                     aria-expanded={isNavOpen}
-                    onClick={() => setIsNavOpen(!isNavOpen)}
+                    onClick={() => setIsNavOpen(true)}
                 >
                     <svg viewBox="0 0 24 24" aria-hidden="true">
-                        {isNavOpen ? (
-                            <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                        ) : (
-                            <>
-                                <line x1="4" y1="6" x2="20" y2="6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                                <line x1="4" y1="12" x2="20" y2="12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                                <line x1="4" y1="18" x2="20" y2="18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                            </>
-                        )}
+                        <line x1="4" y1="6" x2="20" y2="6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                        <line x1="4" y1="12" x2="20" y2="12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                        <line x1="4" y1="18" x2="20" y2="18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                     </svg>
                 </button>
+
+                {/* Mobile Backdrop */}
+                {isNavOpen && (
+                    <div className="nav-backdrop" onClick={() => setIsNavOpen(false)}></div>
+                )}
+
                 <nav className={isNavOpen ? 'nav-open' : ''}>
-                    <Link to="/">Job Vacancies</Link>
-                    <Link to="/about">About NCIP</Link>
-                    <Link to="/admin">Admin Login</Link>
+                    <div className="nav-mobile-header">
+                        <img src={logo} alt="NCIP Logo" className="nav-mobile-logo" />
+                        <button
+                            className="nav-close"
+                            aria-label="Close navigation"
+                            onClick={() => setIsNavOpen(false)}
+                        >
+                            <svg viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5" fill="none">
+                                <path d="M18 6L6 18M6 6l12 12" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+                        </button>
+                    </div>
+                    <div className="nav-links-container">
+                        <Link to="/" onClick={() => setIsNavOpen(false)}>Job Vacancies</Link>
+                        <Link to="/about" onClick={() => setIsNavOpen(false)}>About NCIP</Link>
+                        <Link to="/admin" onClick={() => setIsNavOpen(false)}>Admin Login</Link>
+                    </div>
                 </nav>
             </div>
         </header>
