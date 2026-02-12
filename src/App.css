@@ -248,7 +248,7 @@ body::before {
     border-radius: 12px;
     color: white;
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-    z-index: 1001;
+    z-index: 998;
 }
 
 .menu-toggle:hover {
@@ -311,7 +311,7 @@ body::before {
         display: flex;
         flex-direction: column;
         transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        z-index: 1000;
+        z-index: 1010;
         box-shadow: -10px 0 40px rgba(0, 0, 0, 0.4);
         padding: 0;
         /* Reset padding for internal structure */
@@ -346,6 +346,7 @@ body::before {
         display: flex;
         align-items: center;
         justify-content: center;
+        z-index: 1011;
         transition: all 0.2s ease;
     }
 
@@ -398,7 +399,7 @@ body::before {
         background: rgba(0, 0, 0, 0.4);
         backdrop-filter: blur(4px);
         -webkit-backdrop-filter: blur(4px);
-        z-index: 999;
+        z-index: 1005;
         animation: fadeIn 0.3s ease-out;
     }
 
