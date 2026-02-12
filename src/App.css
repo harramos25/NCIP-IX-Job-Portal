@@ -87,20 +87,20 @@ body::before {
 
 /* ===== HEADERS ===== */
 .public-header {
-    background: linear-gradient(180deg, #4964c0 0%, #334EAC 60%, #1c2f7a 100%);
+    background: linear-gradient(135deg, #3d59c9 0%, #2a4191 100%);
     color: white;
-    padding: 18px 0;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    padding: 1rem 0;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
 }
 
 .public-header .header-content {
-    max-width: 1200px;
+    max-width: 1300px;
     margin: 0 auto;
-    padding: 0 1rem;
+    padding: 0 2rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    column-gap: 2.5rem;
+    column-gap: 2rem;
 }
 
 .logo-container {
@@ -120,10 +120,10 @@ body::before {
 
 .public-header h1 {
     font-family: 'Poppins', sans-serif;
-    font-size: 24px;
-    font-weight: 700;
+    font-size: 22px;
+    font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: -0.01em;
     margin: 0;
     white-space: nowrap;
     overflow: hidden;
@@ -239,15 +239,15 @@ body::before {
 /* ===== MOBILE NAV TOGGLE ===== */
 .menu-toggle {
     display: none;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    padding: 8px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1.5px solid rgba(255, 255, 255, 0.15);
+    padding: 10px;
     cursor: pointer;
     align-items: center;
     justify-content: center;
-    border-radius: 8px;
+    border-radius: 12px;
     color: white;
-    transition: all 0.2s ease;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 1001;
 }
 
@@ -269,9 +269,10 @@ body::before {
     }
 
     .public-header .header-content {
-        padding: 0 1rem;
+        padding: 0 1.25rem;
         flex-wrap: nowrap;
         justify-content: space-between;
+        align-items: center;
     }
 
     .header-logo {
@@ -279,7 +280,7 @@ body::before {
     }
 
     .public-header h1 {
-        font-size: 16px;
+        font-size: 14px;
     }
 
     .public-header nav {
