@@ -73,7 +73,7 @@ const AdminProfile = () => {
 
     const uploadAvatar = async (file) => {
         try {
-            setUploading(true);
+            setIsSubmitting(true);
             const fileExt = file.name.split('.').pop();
             const fileName = `admin-avatar-${Math.random()}.${fileExt}`;
             const filePath = `${fileName}`;
@@ -106,7 +106,7 @@ const AdminProfile = () => {
             console.error('Error uploading avatar:', error);
             showToast('Error uploading avatar: ' + error.message, 'error');
         } finally {
-            setUploading(false);
+            setIsSubmitting(false);
         }
     };
 
@@ -355,8 +355,8 @@ const AdminProfile = () => {
 
                             {!showOtpInput && (
                                 <div className="text-right">
-                                    <button type="submit" className="btn btn-primary" disabled={uploading}>
-                                        {uploading ? 'Updating...' : 'Update Details'}
+                                    <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
+                                        {isSubmitting ? 'Updating...' : 'Update Details'}
                                     </button>
                                 </div>
                             )}
