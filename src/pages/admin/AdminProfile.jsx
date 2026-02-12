@@ -402,7 +402,13 @@ const AdminProfile = () => {
                                 </div>
                             </div>
                             <div className="text-right">
-                                <button type="submit" className="btn btn-secondary">Change Password</button>
+                                <button
+                                    type="submit"
+                                    className="btn btn-secondary"
+                                    disabled={isSubmitting}
+                                >
+                                    {isSubmitting ? 'Updating...' : 'Change Password'}
+                                </button>
                             </div>
                         </form>
                     </div>
