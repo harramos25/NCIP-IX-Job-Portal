@@ -7,6 +7,7 @@ const AdminProfile = () => {
     const { showToast } = useToast();
     const fileInputRef = useRef(null);
     const [loading, setLoading] = useState(true);
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const [profile, setProfile] = useState({
         name: 'NCIP Admin',
         role: 'Super Administrator',
@@ -162,7 +163,7 @@ const AdminProfile = () => {
     const handleSaveProfile = async (e) => {
         e.preventDefault();
         try {
-            setUploading(true);
+            setIsSubmitting(true);
             const updates = {
                 data: {
                     full_name: profile.name,
@@ -206,14 +207,14 @@ const AdminProfile = () => {
             console.error('Profile update error:', error);
             showToast('Error updating profile: ' + error.message, 'error');
         } finally {
-            setUploading(false);
+            setIsSubmitting(false);
         }
     };
 
     const handleVerifyEmailOTP = async (e) => {
         e.preventDefault();
         try {
-            setUploading(true);
+            setIsSubmitting(true);
             const { error } = await supabase.auth.verifyOtp({
                 email: pendingEmail,
                 token: otp,
@@ -230,7 +231,7 @@ const AdminProfile = () => {
             console.error('OTP Verification error:', error);
             showToast('Invalid or expired code.', 'error');
         } finally {
-            setUploading(false);
+            setIsSubmitting(false);
         }
     };
 
@@ -242,7 +243,7 @@ const AdminProfile = () => {
         }
 
         try {
-            setUploading(true);
+            setIsSubmitting(true);
             const { error } = await supabase.auth.updateUser({
                 password: passwords.new
             });
@@ -255,7 +256,7 @@ const AdminProfile = () => {
             console.error('Password update error:', error);
             showToast('Error updating password: ' + error.message, 'error');
         } finally {
-            setUploading(false);
+            setIsSubmitting(false);
         }
     };
 
@@ -335,7 +336,7 @@ const AdminProfile = () => {
                                                 onClick={handleVerifyEmailOTP}
                                                 className="btn btn-primary"
                                                 style={{ flex: 1 }}
-                                                disabled={uploading}
+                                                disabled={isSubmitting}
                                             >
                                                 Verify Code
                                             </button>
