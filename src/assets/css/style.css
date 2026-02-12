@@ -264,23 +264,33 @@ body::before {
     }
 
     .public-header .header-content {
-        padding: 0 1rem;
-        flex-wrap: nowrap;
-        justify-content: space-between;
-        align-items: center;
-        gap: 0.5rem;
+        padding: 0 1rem !important;
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        gap: 0.5rem !important;
     }
 
     .logo-container {
-        gap: 0.5rem;
+        display: flex !important;
+        align-items: center !important;
+        gap: 0.5rem !important;
+        flex: 1 !important;
+        min-width: 0 !important;
     }
 
     .header-logo {
-        height: 32px;
+        height: 32px !important;
+        width: auto !important;
     }
 
     .public-header h1 {
-        font-size: clamp(12px, 3.5vw, 16px);
+        font-size: clamp(12px, 4vw, 15px) !important;
+        margin: 0 !important;
+        flex: 1 !important;
+        min-width: 0 !important;
     }
 
     .public-header nav {
