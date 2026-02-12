@@ -12,7 +12,7 @@ export default function Header() {
     return (
         <header className="public-header">
             <div className="header-content">
-                <div className="logo-container">
+                <Link to="/" className="logo-container">
                     <img
                         src={logo}
                         alt="NCIP Logo"
@@ -20,7 +20,7 @@ export default function Header() {
                         onError={(e) => e.currentTarget.style.display = 'none'}
                     />
                     <h1>NCIP IX JOB PORTAL</h1>
-                </div>
+                </Link>
                 <button
                     className="menu-toggle"
                     aria-label="Toggle navigation"
